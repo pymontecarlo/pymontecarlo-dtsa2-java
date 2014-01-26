@@ -33,13 +33,13 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
-import pymontecarlo.program.nistmonte.input.beam.PencilBeam;
-import pymontecarlo.program.nistmonte.input.detector.Detector;
-import pymontecarlo.program.nistmonte.input.detector.PhotonDetector;
-import pymontecarlo.program.nistmonte.input.limit.Limit;
-import pymontecarlo.program.nistmonte.input.limit.ShowersLimit;
-import pymontecarlo.program.nistmonte.input.model.FluorescenceMC;
-import pymontecarlo.program.nistmonte.input.options.OptionsExtractor;
+import pymontecarlo.program.nistmonte.options.beam.PencilBeam;
+import pymontecarlo.program.nistmonte.options.detector.Detector;
+import pymontecarlo.program.nistmonte.options.detector.PhotonDetector;
+import pymontecarlo.program.nistmonte.options.limit.Limit;
+import pymontecarlo.program.nistmonte.options.limit.ShowersLimit;
+import pymontecarlo.program.nistmonte.options.model.FluorescenceMC;
+import pymontecarlo.program.nistmonte.options.options.OptionsExtractor;
 import pymontecarlo.util.hdf5.HDF5FileWriter;
 import pymontecarlo.util.hdf5.HDF5Group;
 

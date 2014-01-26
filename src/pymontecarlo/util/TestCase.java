@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import org.junit.After;
 import org.junit.Assert;
 
-import pymontecarlo.program.nistmonte.input.beam.PencilBeam;
+import pymontecarlo.program.nistmonte.options.beam.PencilBeam;
 
 /**
  * Generic testing class.
