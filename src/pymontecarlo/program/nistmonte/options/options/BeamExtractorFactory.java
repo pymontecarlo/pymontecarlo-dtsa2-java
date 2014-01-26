@@ -93,9 +93,9 @@ public class BeamExtractorFactory {
 
             double x, y, z;
             try {
-                x = directionElement.getAttribute("x").getDoubleValue();
-                y = directionElement.getAttribute("y").getDoubleValue();
-                z = directionElement.getAttribute("z").getDoubleValue();
+                x = directionElement.getAttribute("u").getDoubleValue();
+                y = directionElement.getAttribute("v").getDoubleValue();
+                z = directionElement.getAttribute("w").getDoubleValue();
             } catch (DataConversionException e) {
                 throw new IOException(e);
             }

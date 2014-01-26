@@ -26,9 +26,9 @@ public class BeamExtractorFactoryTest {
         element.addContent(child);
 
         child = new Element("direction");
-        child.setAttribute("x", "4");
-        child.setAttribute("y", "5");
-        child.setAttribute("z", "6");
+        child.setAttribute("u", "4");
+        child.setAttribute("v", "5");
+        child.setAttribute("w", "6");
         element.addContent(child);
 
         return element;

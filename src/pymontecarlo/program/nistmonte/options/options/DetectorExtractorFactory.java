@@ -37,14 +37,14 @@ public class DetectorExtractorFactory {
          */
         protected double extractTakeOffAngle(Element detectorElement)
                 throws IOException {
+            Element elevationElement = detectorElement.getChild("elevation");
+
             double elevationMin, elevationMax;
             try {
                 elevationMin =
-                        detectorElement.getAttribute("elevation_min")
-                                .getDoubleValue();
+                        elevationElement.getAttribute("lower").getDoubleValue();
                 elevationMax =
-                        detectorElement.getAttribute("elevation_max")
-                                .getDoubleValue();
+                        elevationElement.getAttribute("upper").getDoubleValue();
             } catch (DataConversionException e) {
                 throw new IOException(e);
             }
@@ -63,14 +63,14 @@ public class DetectorExtractorFactory {
          */
         protected double extractAzimuthAngle(Element detectorElement)
                 throws IOException {
+            Element azimuthElement = detectorElement.getChild("azimuth");
+
             double azimuthMin, azimuthMax;
             try {
                 azimuthMin =
-                        detectorElement.getAttribute("azimuth_min")
-                                .getDoubleValue();
+                        azimuthElement.getAttribute("lower").getDoubleValue();
                 azimuthMax =
-                        detectorElement.getAttribute("azimuth_max")
-                                .getDoubleValue();
+                        azimuthElement.getAttribute("upper").getDoubleValue();
             } catch (DataConversionException e) {
                 throw new IOException(e);
             }
@@ -123,14 +123,8 @@ public class DetectorExtractorFactory {
          */
         protected int extractChannels(Element detectorElement)
                 throws IOException {
-            int channels;
-            try {
-                channels =
-                        detectorElement.getAttribute("channels").getIntValue();
-            } catch (DataConversionException e) {
-                throw new IOException(e);
-            }
-            return channels;
+            Element channelsElement = detectorElement.getChild("channels");
+            return Integer.getInteger(channelsElement.getText());
         }
 
 
@@ -163,14 +157,8 @@ public class DetectorExtractorFactory {
          */
         protected int extractChannels(Element detectorElement)
                 throws IOException {
-            int channels;
-            try {
-                channels =
-                        detectorElement.getAttribute("channels").getIntValue();
-            } catch (DataConversionException e) {
-                throw new IOException(e);
-            }
-            return channels;
+            Element channelsElement = detectorElement.getChild("channels");
+            return Integer.getInteger(channelsElement.getText());
         }
 
 
@@ -195,37 +183,20 @@ public class DetectorExtractorFactory {
     protected static class PhotonEmissionMapDetectorExtractor extends
             AbstractDelimitedDetectorExtractor {
 
-        /**
-         * Extracts the number of bins.
-         * 
-         * @param detectorElement
-         *            XML element
-         * @param attr
-         *            attribute name
-         * @return bins
-         */
-        protected int extractBins(Element detectorElement, String attr)
-                throws IOException {
-            int bins;
-            try {
-                bins =
-                        detectorElement.getAttribute(attr).getIntValue();
-            } catch (DataConversionException e) {
-                throw new IOException(e);
-            }
-            return bins;
-        }
-
-
-
         @Override
         public Detector extract(Element detectorElement) throws IOException,
                 EPQException {
             double takeOffAngle = extractTakeOffAngle(detectorElement);
             double azimuthAngle = extractAzimuthAngle(detectorElement);
-            int xBins = extractBins(detectorElement, "xbins");
-            int yBins = extractBins(detectorElement, "ybins");
-            int zBins = extractBins(detectorElement, "zbins");
+            int xBins =
+                    Integer.getInteger(detectorElement.getChild("xbins")
+                            .getText());
+            int yBins =
+                    Integer.getInteger(detectorElement.getChild("ybins")
+                            .getText());
+            int zBins =
+                    Integer.getInteger(detectorElement.getChild("zbins")
+                            .getText());
 
             return new PhotonEmissionMapDetector(takeOffAngle, azimuthAngle,
                     xBins, yBins, zBins);
@@ -249,14 +220,8 @@ public class DetectorExtractorFactory {
          */
         protected int extractChannels(Element detectorElement)
                 throws IOException {
-            int channels;
-            try {
-                channels =
-                        detectorElement.getAttribute("channels").getIntValue();
-            } catch (DataConversionException e) {
-                throw new IOException(e);
-            }
-            return channels;
+            Element channelsElement = detectorElement.getChild("channels");
+            return Integer.getInteger(channelsElement.getText());
         }
 
 
@@ -272,20 +237,12 @@ public class DetectorExtractorFactory {
                 throws IOException {
             int channels = extractChannels(detectorElement);
 
+            Element limitElement = detectorElement.getChild("limits");
+
             double limitMin, limitMax;
-
             try {
-                limitMin =
-                        detectorElement.getAttribute("limit_min")
-                                .getDoubleValue();
-            } catch (DataConversionException e) {
-                throw new IOException(e);
-            }
-
-            try {
-                limitMax =
-                        detectorElement.getAttribute("limit_max")
-                                .getDoubleValue();
+                limitMin = limitElement.getAttribute("lower").getDoubleValue();
+                limitMax = limitElement.getAttribute("upper").getDoubleValue();
             } catch (DataConversionException e) {
                 throw new IOException(e);
             }
@@ -325,14 +282,8 @@ public class DetectorExtractorFactory {
          */
         protected int extractChannels(Element detectorElement)
                 throws IOException {
-            int channels;
-            try {
-                channels =
-                        detectorElement.getAttribute("channels").getIntValue();
-            } catch (DataConversionException e) {
-                throw new IOException(e);
-            }
-            return channels;
+            Element channelsElement = detectorElement.getChild("channels");
+            return Integer.getInteger(channelsElement.getText());
         }
 
 
@@ -357,14 +308,8 @@ public class DetectorExtractorFactory {
         @Override
         public Detector extract(Element detectorElement) throws IOException,
                 EPQException {
-            boolean secondary;
-            try {
-                secondary =
-                        detectorElement.getAttribute("secondary")
-                                .getBooleanValue();
-            } catch (DataConversionException e) {
-                throw new IOException(e);
-            }
+            Element secondaryElement = detectorElement.getChild("secondary");
+            boolean secondary = Boolean.getBoolean(secondaryElement.getText());
 
             return new TrajectoryDetector(secondary);
         }

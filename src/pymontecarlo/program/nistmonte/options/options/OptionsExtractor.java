@@ -41,8 +41,6 @@ public class OptionsExtractor implements Extractor {
                 GeometryExtractorFactory.MULTI_LAYERS);
         ExtractorManager.register("grainBoundaries",
                 GeometryExtractorFactory.GRAIN_BOUNDARIES);
-        ExtractorManager.register("thinGrainBoundaries",
-                GeometryExtractorFactory.THIN_GRAIN_BOUNDARIES);
 
         // Detector
         ExtractorManager.register("photonIntensityDetector",
@@ -69,6 +67,8 @@ public class OptionsExtractor implements Extractor {
         // Model
         ExtractorManager.register("model", ModelExtractorFactory.ALL);
     }
+
+    public static final String VERSION = "6";
 
     /** Name of the simulation. */
     private String name = null;
@@ -118,6 +118,12 @@ public class OptionsExtractor implements Extractor {
      */
     public void extract(Element root) throws IOException, EPQException {
         mcss = createMonteCarloSS();
+
+        // Header
+        String version = root.getAttributeValue("version");
+        if (!version.equalsIgnoreCase(VERSION))
+            throw new IOException("Incompatible version: " + version + " != "
+                    + VERSION);
 
         // Name
         name = root.getAttributeValue("name");

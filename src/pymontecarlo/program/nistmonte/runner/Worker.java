@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -51,7 +52,7 @@ import pymontecarlo.util.hdf5.HDF5Group;
 public class Worker {
 
     /** Version of results file. */
-    private static final String version = "6";
+    private static final String VERSION = "7";
 
     /** XML file of the options. */
     private final File optionsFile;
@@ -308,6 +309,16 @@ public class Worker {
             Element rootElement, String name) throws IOException {
         HDF5Group rootGroup = HDF5Group.createRoot();
 
+        // Save version, class
+        rootGroup.setAttribute("version", VERSION);
+        rootGroup.setAttribute("_class", "Results");
+
+        // Create results group
+        String identifier = "i" + UUID.randomUUID().toString().replace("-", "");
+        rootGroup.setAttribute("identifiers", new String[] { identifier });
+
+        HDF5Group resultsGroup = rootGroup.createSubgroup(identifier);
+
         // Save results from detectors
         String key;
         Detector detector;
@@ -315,21 +326,19 @@ public class Worker {
             key = entry.getKey();
             detector = entry.getValue();
 
-            detector.saveResults(rootGroup, key);
+            detector.saveResults(resultsGroup, key);
         }
 
         // Save overall log
         Properties props = new Properties();
         createLog(props, mcss);
-        rootGroup.setAttribute("log", props.toString());
+        resultsGroup.setAttribute("log", props.toString());
 
         // Save options
         XMLOutputter outputter = new XMLOutputter(Format.getCompactFormat());
         String optionsStr = outputter.outputString(rootElement);
+        resultsGroup.setAttribute("options", optionsStr);
         rootGroup.setAttribute("options", optionsStr);
-
-        // Save version
-        rootGroup.setAttribute("version", version);
 
         File resultsH5 = new File(resultsDir, name + ".h5");
         HDF5FileWriter.write(rootGroup, resultsH5, true);

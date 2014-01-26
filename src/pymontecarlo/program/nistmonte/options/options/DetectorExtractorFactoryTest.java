@@ -18,13 +18,17 @@ public class DetectorExtractorFactoryTest {
                         "photonIntensityDetector");
         element.setAttribute("_key", key);
 
-        element.setAttribute("elevation_min",
+        Element elevationElement = new Element("elevation");
+        elevationElement.setAttribute("lower",
                 Double.toString(Math.toRadians(30)));
-        element.setAttribute("elevation_max",
+        elevationElement.setAttribute("upper",
                 Double.toString(Math.toRadians(50)));
-        element.setAttribute("azimuth_min", Double.toString(Math.toRadians(0)));
-        element.setAttribute("azimuth_max",
-                Double.toString(Math.toRadians(180)));
+        element.addContent(elevationElement);
+        
+        Element azimuthElement = new Element("azimuth");
+        azimuthElement.setAttribute("lower", Double.toString(Math.toRadians(0)));
+        azimuthElement.setAttribute("upper", Double.toString(Math.toRadians(180)));
+        element.addContent(azimuthElement);
 
         return element;
     }

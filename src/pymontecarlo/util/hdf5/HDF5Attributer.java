@@ -22,6 +22,12 @@ public abstract class HDF5Attributer {
         attributes.put(name, attr);
         return attr;
     }
+    
+    public HDF5Attribute setAttribute(String name, String... values) {
+        HDF5Attribute attr = new HDF5Attribute(HDF5Type.STRING, values);
+        attributes.put(name, attr);
+        return attr;
+    }
 
 
 
