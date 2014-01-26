@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+
+<project basedir="." name="pymontecarlo-dtsa" default="help">
+
+    <!-- Read the local properties (if present) -->
+    <property name="property.file" location="build.prop" />
+    <property file="${property.file}" />
+
+    <!-- Set default values to properties -->
+    <echo message="===&gt; Input directories" />
+
+    <property name="src.dir" location="${basedir}/src" />
+    <echo message="  src.dir = ${src.dir}" />
+
+    <property name="lib.dir" location="${basedir}/lib" />
+    <echo message="  lib.dir = ${lib.dir}" />
+
+    <property name="epq.dir" location="${basedir}/../DTSA2/NWMR/trunk" />
+    <echo message="  epq.dir = ${epq.dir}" />
+
+    <property name="epq.src.dir" location="${epq.dir}/EPQ/src" />
+    <echo message="  epq.src.dir = ${epq.src.dir}" />
+
+    <property name="epq.lib.dir" location="${epq.dir}/3rd Party Libraries" />
+    <echo message="  epq.lib.dir = ${epq.lib.dir}" />
+
+    <echo message="===&gt; Output directories" />
+
+    <property name="tmp.dir" location="${java.io.tmpdir}" />
+    <echo message="  tmp.dir = ${tmp.dir}" />
+
+    <property name="build.dir" location="${tmp.dir}/build" />
+    <echo message="  build.dir = ${build.dir}" />
+
+    <property name="dist.dir" location="${tmp.dir}/dist" />
+    <echo message="  dist.dir = ${dist.dir}" />
+
+    <target name="help" />
+
+    <target name="-init" description="Create all directories for build">
+        <mkdir dir="${build.dir}" />
+    </target>
+
+    <target name="clean"
+            description="Removes all temporary files and directories">
+        <delete dir="${build.dir}" />
+    </target>
+
+    <target name="clean-all"
+            description="Remove all created files and directories"
+            depends="clean">
+        <delete dir="${dist.dir}" />
+        <delete dir="${doc.dir}" />
+    </target>
+
+    <target name="compile-epq" description="Build EPQ Library" depends="-init">
+        <javac destdir="${build.dir}"
+               source="1.7"
+               target="1.7"
+               encoding="iso-8859-1"
+               srcdir="${epq.src.dir}"
+               extdirs="${epq.lib.dir}"
+               failonerror="true"
+               debug="true"
+               deprecation="true"
+               includeAntRuntime="false">
+            <include name="**/gov/nist/microanalysis/**/*" />
+            <include name="**/flanagan/**/*" />
+            <exclude name="gov/nist/microanalysis/NISTMonte/MeshedRegion.java" />
+            <exclude name="gov/nist/microanalysis/NISTMonte/MeshElementRegion.java" />
+        </javac>
+    </target>
+
+    <target name="compile-pymontecarlo"
+            description="Build pymontecarlo"
+            depends="-init">
+        <javac destdir="${build.dir}"
+               source="1.7"
+               target="1.7"
+               encoding="iso-8859-1"
+               srcdir="${src.dir}"
+               extdirs="${lib.dir}"
+               failonerror="true"
+               debug="true"
+               deprecation="true"
+               includeAntRuntime="false">
+            <include name="**" />
+        </javac>
+    </target>
+
+    <target name="jar-pymontecarlo"
+            description="Create jar for pymontecarlo"
+            depends="compile-epq,compile-pymontecarlo">
+        <jar destfile="${dist.dir}/pymontecarlo-nistmonte.jar">
+            <fileset dir="${build.dir}" includes="**" />
+            <fileset dir="${src.dir}">
+                <include name="**" />
+            </fileset>
+            <fileset dir="${epq.src.dir}">
+                <include name="**/gov/nist/microanalysis/**/*" />
+                <include name="**/flanagan/**/*" />
+            </fileset>
+
+            <manifest>
+                <attribute name="Main-Class"
+                           value="pymontecarlo.program.nistmonte.ui.cui.Main" />
+                <attribute name="Class-Path"
+                           value="nujan-1.4.1.1.jar jdom-2.0.4.jar commons-cli-1.2.jar xstream-1.4.1.jar xpp3-1.1.4c.jar junit.jar Jama-1.0.2.jar derby.jar derbynet.jar derbyclient.jar" />
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="dist-pymontecarlo"
+            description="Distribute pymontecarlo and DTSA2"
+            depends="jar-pymontecarlo">
+        <copy todir="${dist.dir}">
+            <fileset dir="${lib.dir}">
+                <include name="nujan*.jar" />
+                <include name="jdom*.jar" />
+                <include name="commons-cli*.jar" />
+                <include name="junit*.jar" />
+            </fileset>
+            <fileset dir="${epq.lib.dir}">
+                <include name="xstream*.jar" />
+                <include name="xpp3*.jar" />
+                <include name="Jama*.jar" />
+                <include name="derby*.jar" />
+            </fileset>
+        </copy>
+    </target>
+
+</project>
