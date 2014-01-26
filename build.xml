@@ -107,7 +107,7 @@
                 <attribute name="Main-Class"
                            value="pymontecarlo.program.nistmonte.ui.cui.Main" />
                 <attribute name="Class-Path"
-                           value="nujan-1.4.1.1.jar jdom-2.0.4.jar commons-cli-1.2.jar xstream-1.4.1.jar xpp3-1.1.4c.jar junit.jar Jama-1.0.2.jar derby.jar derbynet.jar derbyclient.jar" />
+                           value="nujan-1.4.1.1.jar jdom-2.0.4.jar commons-cli-1.2.jar xstream-1.4.1.jar xpp3-1.1.4c.jar junit.jar Jama-1.0.3.jar derby.jar derbynet.jar derbyclient.jar" />
             </manifest>
         </jar>
     </target>
