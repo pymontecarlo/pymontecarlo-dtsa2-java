@@ -93,7 +93,7 @@
     <target name="jar-pymontecarlo"
             description="Create jar for pymontecarlo"
             depends="compile-epq,compile-pymontecarlo">
-        <jar destfile="${dist.dir}/pymontecarlo-nistmonte.jar">
+        <jar destfile="${dist.dir}/pymontecarlo-dtsa.jar">
             <fileset dir="${build.dir}" includes="**" />
             <fileset dir="${src.dir}">
                 <include name="**" />
