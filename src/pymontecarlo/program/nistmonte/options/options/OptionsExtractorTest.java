@@ -49,6 +49,7 @@ public class OptionsExtractorTest {
     public static Element createOptionsElement() throws EPQException {
         Element element = new Element("options");
         element.setAttribute("name", "test");
+        element.setAttribute("version", OptionsExtractor.VERSION);
 
         Element beamElement = new Element("beam");
         beamElement.addContent(BeamExtractorFactoryTest
