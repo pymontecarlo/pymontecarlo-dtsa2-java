@@ -204,7 +204,8 @@ public class GeometryExtractorFactory {
                 material.setName(name);
 
                 scatterModel = new BasicMaterialModel(material);
-                scatterModel.setMinEforTracking(absorptionEnergyElectron);
+                scatterModel.setMinEforTracking(ToSI
+                        .eV(absorptionEnergyElectron));
 
                 materials.put(index, scatterModel);
             }
@@ -622,102 +623,102 @@ public class GeometryExtractorFactory {
     public static final GeometryExtractor GRAIN_BOUNDARIES =
             new GrainBoundariesExtractor();
 
-//    /** Thin grain boundaries extractor. */
-//    protected static class ThinGrainBoundariesExtractor extends
-//            AbstractGeometryExtractor {
-//
-//        @Override
-//        public void extract(Element geometryElement, Region chamber)
-//                throws IOException, EPQException {
-//            Map<Integer, IMaterialScatterModel> materials =
-//                    extractMaterials(geometryElement);
-//            Map<Integer, Body> bodies =
-//                    extractBodies(geometryElement, materials);
-//
-//            // Setup layers
-//            List<Layer> layers = new ArrayList<Layer>();
-//            double totalThickness = 0.0;
-//
-//            int leftSubstrate;
-//            try {
-//                leftSubstrate =
-//                        geometryElement.getAttribute("left_substrate")
-//                                .getIntValue();
-//            } catch (DataConversionException e) {
-//                throw new IOException(e);
-//            }
-//
-//            layers.add(new Layer(leftSubstrate,
-//                    bodies.get(leftSubstrate).material, 0.1));
-//            totalThickness += 0.1;
-//
-//            String[] indexStrs =
-//                    geometryElement.getAttributeValue("layers").split(",");
-//            Layer tmpLayer;
-//            for (String indexStr : indexStrs) {
-//                tmpLayer =
-//                        (Layer) bodies.get(Integer.parseInt(indexStr));
-//                layers.add(tmpLayer);
-//                totalThickness += tmpLayer.thickness;
-//            }
-//
-//            int rightSubstrate;
-//            try {
-//                rightSubstrate =
-//                        geometryElement.getAttribute("right_substrate")
-//                                .getIntValue();
-//            } catch (DataConversionException e) {
-//                throw new IOException(e);
-//            }
-//            layers.add(new Layer(rightSubstrate,
-//                    bodies.get(rightSubstrate).material, 0.1));
-//            totalThickness += 0.1;
-//
-//            // Thickness
-//            float geometryThickness;
-//            try {
-//                geometryThickness =
-//                        geometryElement.getAttribute("thickness")
-//                                .getFloatValue();
-//            } catch (DataConversionException e) {
-//                throw new IOException(e);
-//            }
-//
-//            // Create regions
-//            MultiPlaneShape shape;
-//            double[] surfaceNormal = Math2.Z_AXIS;
-//            double[] layerNormal = Math2.MINUS_X_AXIS;
-//            double[] origin = Math2.ORIGIN_3D;
-//            double[] bottom =
-//                    Math2.multiply(geometryThickness, Math2.MINUS_Z_AXIS);
-//            double[] point =
-//                    Math2.multiply(-totalThickness / 2.0, Math2.X_AXIS);
-//
-//            IMaterialScatterModel material;
-//            double thickness;
-//
-//            for (Layer layer : layers) {
-//                thickness = layer.thickness;
-//                material = layer.material;
-//
-//                shape =
-//                        MultiPlaneShape.createFilm(layerNormal, point,
-//                                thickness);
-//                shape.addPlane(surfaceNormal, origin); // surface
-//                shape.addPlane(Math2.multiply(-1, surfaceNormal), bottom); // bottom
-//                new IndexedRegion(chamber, material, shape, layer.index);
-//
-//                // Calculate next point
-//                point =
-//                        Math2.plus(point,
-//                                Math2.multiply(thickness, Math2.X_AXIS));
-//            }
-//
-//            applyRotationTilt(geometryElement, chamber);
-//        }
-//    }
-//
-//    public static final GeometryExtractor THIN_GRAIN_BOUNDARIES =
-//            new ThinGrainBoundariesExtractor();
+    // /** Thin grain boundaries extractor. */
+    // protected static class ThinGrainBoundariesExtractor extends
+    // AbstractGeometryExtractor {
+    //
+    // @Override
+    // public void extract(Element geometryElement, Region chamber)
+    // throws IOException, EPQException {
+    // Map<Integer, IMaterialScatterModel> materials =
+    // extractMaterials(geometryElement);
+    // Map<Integer, Body> bodies =
+    // extractBodies(geometryElement, materials);
+    //
+    // // Setup layers
+    // List<Layer> layers = new ArrayList<Layer>();
+    // double totalThickness = 0.0;
+    //
+    // int leftSubstrate;
+    // try {
+    // leftSubstrate =
+    // geometryElement.getAttribute("left_substrate")
+    // .getIntValue();
+    // } catch (DataConversionException e) {
+    // throw new IOException(e);
+    // }
+    //
+    // layers.add(new Layer(leftSubstrate,
+    // bodies.get(leftSubstrate).material, 0.1));
+    // totalThickness += 0.1;
+    //
+    // String[] indexStrs =
+    // geometryElement.getAttributeValue("layers").split(",");
+    // Layer tmpLayer;
+    // for (String indexStr : indexStrs) {
+    // tmpLayer =
+    // (Layer) bodies.get(Integer.parseInt(indexStr));
+    // layers.add(tmpLayer);
+    // totalThickness += tmpLayer.thickness;
+    // }
+    //
+    // int rightSubstrate;
+    // try {
+    // rightSubstrate =
+    // geometryElement.getAttribute("right_substrate")
+    // .getIntValue();
+    // } catch (DataConversionException e) {
+    // throw new IOException(e);
+    // }
+    // layers.add(new Layer(rightSubstrate,
+    // bodies.get(rightSubstrate).material, 0.1));
+    // totalThickness += 0.1;
+    //
+    // // Thickness
+    // float geometryThickness;
+    // try {
+    // geometryThickness =
+    // geometryElement.getAttribute("thickness")
+    // .getFloatValue();
+    // } catch (DataConversionException e) {
+    // throw new IOException(e);
+    // }
+    //
+    // // Create regions
+    // MultiPlaneShape shape;
+    // double[] surfaceNormal = Math2.Z_AXIS;
+    // double[] layerNormal = Math2.MINUS_X_AXIS;
+    // double[] origin = Math2.ORIGIN_3D;
+    // double[] bottom =
+    // Math2.multiply(geometryThickness, Math2.MINUS_Z_AXIS);
+    // double[] point =
+    // Math2.multiply(-totalThickness / 2.0, Math2.X_AXIS);
+    //
+    // IMaterialScatterModel material;
+    // double thickness;
+    //
+    // for (Layer layer : layers) {
+    // thickness = layer.thickness;
+    // material = layer.material;
+    //
+    // shape =
+    // MultiPlaneShape.createFilm(layerNormal, point,
+    // thickness);
+    // shape.addPlane(surfaceNormal, origin); // surface
+    // shape.addPlane(Math2.multiply(-1, surfaceNormal), bottom); // bottom
+    // new IndexedRegion(chamber, material, shape, layer.index);
+    //
+    // // Calculate next point
+    // point =
+    // Math2.plus(point,
+    // Math2.multiply(thickness, Math2.X_AXIS));
+    // }
+    //
+    // applyRotationTilt(geometryElement, chamber);
+    // }
+    // }
+    //
+    // public static final GeometryExtractor THIN_GRAIN_BOUNDARIES =
+    // new ThinGrainBoundariesExtractor();
 
 }
