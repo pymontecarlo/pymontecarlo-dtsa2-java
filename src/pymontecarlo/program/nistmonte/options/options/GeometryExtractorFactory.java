@@ -426,8 +426,8 @@ public class GeometryExtractorFactory {
     public static final GeometryExtractor INCLUSION =
             new InclusionGeometryExtractor();
 
-    /** Multi-layers extractor. */
-    protected static class MultiLayersGeometryExtractor extends
+    /** Horizontal-layers extractor. */
+    protected static class HorizontalLayersGeometryExtractor extends
             AbstractGeometryExtractor {
 
         @Override
@@ -496,11 +496,11 @@ public class GeometryExtractorFactory {
 
     }
 
-    public static final GeometryExtractor MULTI_LAYERS =
-            new MultiLayersGeometryExtractor();
+    public static final GeometryExtractor HORIZONTAL_LAYERS =
+            new HorizontalLayersGeometryExtractor();
 
-    /** Grain boundaries extractor. */
-    protected static class GrainBoundariesExtractor extends
+    /** Vertical layers extractor. */
+    protected static class VerticalLayersExtractor extends
             AbstractGeometryExtractor {
 
         private class Layer {
@@ -620,8 +620,8 @@ public class GeometryExtractorFactory {
 
     }
 
-    public static final GeometryExtractor GRAIN_BOUNDARIES =
-            new GrainBoundariesExtractor();
+    public static final GeometryExtractor VERTICAL_LAYERS=
+            new VerticalLayersExtractor();
 
     // /** Thin grain boundaries extractor. */
     // protected static class ThinGrainBoundariesExtractor extends

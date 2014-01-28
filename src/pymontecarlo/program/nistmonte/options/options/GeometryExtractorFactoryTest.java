@@ -56,11 +56,9 @@ public class GeometryExtractorFactoryTest {
         Material mat = model.getMaterial();
 
         Element element = new Element("material");
-        element.setAttribute("index", Integer.toString(index));
+        element.setAttribute("_index", Integer.toString(index));
         element.setAttribute("name", mat.getName());
         element.setAttribute("density", Double.toString(mat.getDensity()));
-        element.setAttribute("absorptionEnergyElectron",
-                Double.toString(FromSI.eV(model.getMinEforTracking())));
 
         Element compositionElement = new Element("composition");
         Element elementElement;
@@ -76,29 +74,11 @@ public class GeometryExtractorFactoryTest {
         }
         element.addContent(compositionElement);
 
-        return element;
-    }
-
-
-
-    private static Element createBodyElement(int index, int materialIndex) {
-        Element element = new Element("body");
-
-        element.setAttribute("index", Integer.toString(index));
-        element.setAttribute("material", Integer.toString(materialIndex));
-
-        return element;
-    }
-
-
-
-    private static Element createLayerElement(int index, int materialIndex,
-            double thickness) {
-        Element element = new Element("layer");
-
-        element.setAttribute("index", Integer.toString(index));
-        element.setAttribute("material", Integer.toString(materialIndex));
-        element.setAttribute("thickness", Double.toString(thickness));
+        Element absorptionEnergyElement = new Element("absorptionEnergy");
+        absorptionEnergyElement.setAttribute("particle", "electron");
+        absorptionEnergyElement.setText(Double.toString(FromSI.eV(model
+                .getMinEforTracking())));
+        element.addContent(absorptionEnergyElement);
 
         return element;
     }
@@ -115,15 +95,14 @@ public class GeometryExtractorFactoryTest {
     public static Element createSubstrateGeometryElement() throws EPQException {
         Element element =
                 new Element("substrate");
-        element.setAttribute("substrate", "0");
         element.setAttribute("rotation", "0.0");
         element.setAttribute("tilt", Double.toString(Math.toRadians(30.0)));
 
         element.addContent(createMaterialsElement());
 
-        Element bodiesElement = new Element("bodies");
-        bodiesElement.addContent(createBodyElement(0, 1));
-        element.addContent(bodiesElement);
+        Element bodyElement = new Element("body");
+        bodyElement.setAttribute("material", "1");
+        element.addContent(bodyElement);
 
         return element;
     }
@@ -157,18 +136,19 @@ public class GeometryExtractorFactoryTest {
     public static Element createInclusionGeometryElement() throws EPQException {
         Element element =
                 new Element("inclusion");
-        element.setAttribute("substrate", "0");
-        element.setAttribute("inclusion", "1");
-        element.setAttribute("diameter", "1e-6");
         element.setAttribute("rotation", "0.0");
         element.setAttribute("tilt", Double.toString(Math.toRadians(30.0)));
 
         element.addContent(createMaterialsElement());
 
-        Element bodiesElement = new Element("bodies");
-        bodiesElement.addContent(createBodyElement(0, 1));
-        bodiesElement.addContent(createBodyElement(1, 2));
-        element.addContent(bodiesElement);
+        Element substrateElement = new Element("substrate");
+        substrateElement.setAttribute("material", "1");
+        element.addContent(substrateElement);
+
+        Element inclusionElement = new Element("inclusion");
+        inclusionElement.setAttribute("material", "2");
+        inclusionElement.setAttribute("diameter", "1e-6");
+        element.addContent(inclusionElement);
 
         return element;
     }
@@ -186,8 +166,7 @@ public class GeometryExtractorFactoryTest {
 
         // Test
         assertEquals(2, chamber.getSubRegions().size());
-        
-        
+
         RegionBase region = chamber.getSubRegions().get(0);
 
         IMaterialScatterModel model = region.getScatterModel();
@@ -197,7 +176,7 @@ public class GeometryExtractorFactoryTest {
         assertEquals("Si3N4", mat.getName());
         assertEquals(3.44, mat.getDensity(), 1e-2);
         assertEquals(2, mat.getElementSet().size());
-        
+
         region = chamber.getSubRegions().get(1);
 
         model = region.getScatterModel();
@@ -211,22 +190,32 @@ public class GeometryExtractorFactoryTest {
 
 
 
-    public static Element createMultiLayersGeometryElement()
+    public static Element createHorizontalLayersGeometryElement()
             throws EPQException {
         Element element =
-                new Element("multiLayers");
-        element.setAttribute("substrate", "2");
-        element.setAttribute("layers", "0,1");
+                new Element("horizontalLayers");
         element.setAttribute("tilt", Double.toString(Math.toRadians(30.0)));
         element.setAttribute("rotation", Double.toString(Math.toRadians(180)));
 
         element.addContent(createMaterialsElement());
 
-        Element bodiesElement = new Element("bodies");
-        bodiesElement.addContent(createBodyElement(2, 3));
-        bodiesElement.addContent(createLayerElement(0, 1, 50e-9));
-        bodiesElement.addContent(createLayerElement(1, 2, 150e-9));
-        element.addContent(bodiesElement);
+        Element substrateElement = new Element("substrate");
+        substrateElement.setAttribute("material", "3");
+        element.addContent(substrateElement);
+
+        Element layersElement = new Element("layers");
+
+        Element layerElement = new Element("layer");
+        layerElement.setAttribute("material", "1");
+        layerElement.setAttribute("thickness", "50e-9");
+        layersElement.addContent(layerElement);
+
+        layerElement = new Element("layer");
+        layerElement.setAttribute("material", "2");
+        layerElement.setAttribute("thickness", "150e-9");
+        layersElement.addContent(layerElement);
+
+        element.addContent(layersElement);
 
         return element;
     }
@@ -236,10 +225,11 @@ public class GeometryExtractorFactoryTest {
     @Test
     public void testMULTI_LAYERS() throws IOException, EPQException {
         // Setup
-        Element element = createMultiLayersGeometryElement();
+        Element element = createHorizontalLayersGeometryElement();
 
         // Extract
-        GeometryExtractor extractor = GeometryExtractorFactory.MULTI_LAYERS;
+        GeometryExtractor extractor =
+                GeometryExtractorFactory.HORIZONTAL_LAYERS;
         extractor.extract(element, chamber);
 
         // Tests
@@ -291,23 +281,32 @@ public class GeometryExtractorFactoryTest {
 
 
 
-    public static Element createGrainBoundariesGeometryElement()
+    public static Element createVerticalLayersGeometryElement()
             throws EPQException {
         Element element =
-                new Element("grainBoundaries");
-        element.setAttribute("left_substrate", "0");
-        element.setAttribute("right_substrate", "2");
-        element.setAttribute("layers", "1");
+                new Element("verticalLayers");
         element.setAttribute("rotation", "0.0");
         element.setAttribute("tilt", Double.toString(Math.toRadians(30.0)));
 
         element.addContent(createMaterialsElement());
+        
+        Element leftSubstrateElement = new Element("leftSubstrate");
+        leftSubstrateElement.setAttribute("material", "1");
+        leftSubstrateElement.setAttribute("depth", "-INF");
+        element.addContent(leftSubstrateElement);
 
-        Element bodiesElement = new Element("bodies");
-        bodiesElement.addContent(createBodyElement(2, 3));
-        bodiesElement.addContent(createBodyElement(0, 1));
-        bodiesElement.addContent(createLayerElement(1, 2, 150e-9));
-        element.addContent(bodiesElement);
+        Element layersElement = new Element("layers");
+        Element layerElement = new Element("layer");
+        layerElement.setAttribute("material", "2");
+        layerElement.setAttribute("thickness", "150e-9");
+        layerElement.setAttribute("depth", "-INF");
+        layersElement.addContent(layerElement);
+        element.addContent(layersElement);
+        
+        Element rightSubstrateElement = new Element("rightSubstrate");
+        rightSubstrateElement.setAttribute("material", "3");
+        rightSubstrateElement.setAttribute("depth", "-INF");
+        element.addContent(rightSubstrateElement);
 
         return element;
     }
@@ -315,12 +314,12 @@ public class GeometryExtractorFactoryTest {
 
 
     @Test
-    public void testGRAIN_BOUNDARIES() throws IOException, EPQException {
+    public void testVERTICAL_LAYERS() throws IOException, EPQException {
         // Setup
-        Element element = createGrainBoundariesGeometryElement();
+        Element element = createVerticalLayersGeometryElement();
 
         // Extract
-        GeometryExtractor extractor = GeometryExtractorFactory.GRAIN_BOUNDARIES;
+        GeometryExtractor extractor = GeometryExtractorFactory.VERTICAL_LAYERS;
         extractor.extract(element, chamber);
 
         // Test

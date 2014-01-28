@@ -37,10 +37,10 @@ public class OptionsExtractor implements Extractor {
                 GeometryExtractorFactory.SUBSTRATE);
         ExtractorManager.register("inclusion",
                 GeometryExtractorFactory.INCLUSION);
-        ExtractorManager.register("multiLayers",
-                GeometryExtractorFactory.MULTI_LAYERS);
-        ExtractorManager.register("grainBoundaries",
-                GeometryExtractorFactory.GRAIN_BOUNDARIES);
+        ExtractorManager.register("horizontalLayers",
+                GeometryExtractorFactory.HORIZONTAL_LAYERS);
+        ExtractorManager.register("verticalLayers",
+                GeometryExtractorFactory.VERTICAL_LAYERS);
 
         // Detector
         ExtractorManager.register("photonIntensityDetector",
