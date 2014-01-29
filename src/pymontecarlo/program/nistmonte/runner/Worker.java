@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -314,10 +313,11 @@ public class Worker {
         rootGroup.setAttribute("_class", "Results");
 
         // Create results group
-        String identifier = "i" + UUID.randomUUID().toString().replace("-", "");
+        String identifier = rootElement.getAttributeValue("uuid");
         rootGroup.setAttribute("identifiers", new String[] { identifier });
 
-        HDF5Group resultsGroup = rootGroup.createSubgroup(identifier);
+        HDF5Group resultsGroup =
+                rootGroup.createSubgroup("result-" + identifier);
 
         // Save results from detectors
         String key;
