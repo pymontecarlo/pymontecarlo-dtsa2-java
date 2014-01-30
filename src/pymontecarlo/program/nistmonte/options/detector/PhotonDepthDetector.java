@@ -94,8 +94,7 @@ public class PhotonDepthDetector extends AbstractPhotonDetector {
             if (!trans.isWellKnown())
                 continue;
 
-            transitionName =
-                    trans.getElement().toAbbrev() + " " + trans.getIUPACName();
+            transitionName = trans.getIUPACName();
             transitionGroup = group.createSubgroup(transitionName);
 
             gnf = new double[2][channels];

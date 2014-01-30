@@ -16,7 +16,7 @@ public class PhotonEmissionMapDetector extends AbstractPhotonDetector {
     private final int xBins, yBins, zBins;
 
     private PhotonEmissionMapListener mapCharac;
-    
+
     private PhotonEmissionMapListener mapTotal;
 
 
@@ -65,7 +65,7 @@ public class PhotonEmissionMapDetector extends AbstractPhotonDetector {
             XRayTransport3 bremssFluo) throws EPQException {
         if (charac == null)
             throw new NullPointerException("charact == null");
-        
+
         // Calculate maximum dimensions
         double[] c0 = new double[3];
         double[] c1 = new double[3];
@@ -92,7 +92,7 @@ public class PhotonEmissionMapDetector extends AbstractPhotonDetector {
                         yMin, yMax, yBins, zMin, zMax, zBins);
         charac.addXRayListener(mapCharac);
         charac.addXRayListener(mapTotal);
-        
+
         if (characFluo != null)
             characFluo.addXRayListener(mapTotal);
 
@@ -112,7 +112,7 @@ public class PhotonEmissionMapDetector extends AbstractPhotonDetector {
     @Override
     public void saveResults(HDF5Group root, String key) throws IOException {
         super.saveResults(root, key);
-        
+
         HDF5Group group = root.requireSubgroup(key);
 
         String transitionName;
@@ -122,8 +122,7 @@ public class PhotonEmissionMapDetector extends AbstractPhotonDetector {
             if (!trans.isWellKnown())
                 continue;
 
-            transitionName =
-                    trans.getElement().toAbbrev() + " " + trans.getIUPACName();
+            transitionName = trans.getIUPACName();
             transitionGroup = group.createSubgroup(transitionName);
 
             gnf = mapCharac.getGeneratedDistribution(trans).getArray();

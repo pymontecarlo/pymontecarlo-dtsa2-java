@@ -98,7 +98,7 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
         double ecf, ebf, enf;
         int[][] emptyData = new int[][] { { 0 } };
         for (XRayTransition transition : accumCharac.getTransitions()) {
-            transitionName =transition.getIUPACName();
+            transitionName = transition.getIUPACName();
 
             ds = group.createDataset(transitionName, emptyData);
 

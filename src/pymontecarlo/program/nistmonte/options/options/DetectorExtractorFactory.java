@@ -124,7 +124,7 @@ public class DetectorExtractorFactory {
         protected int extractChannels(Element detectorElement)
                 throws IOException {
             Element channelsElement = detectorElement.getChild("channels");
-            return Integer.getInteger(channelsElement.getText());
+            return Integer.parseInt(channelsElement.getText());
         }
 
 
@@ -158,7 +158,7 @@ public class DetectorExtractorFactory {
         protected int extractChannels(Element detectorElement)
                 throws IOException {
             Element channelsElement = detectorElement.getChild("channels");
-            return Integer.getInteger(channelsElement.getText());
+            return Integer.parseInt(channelsElement.getText());
         }
 
 
@@ -189,13 +189,13 @@ public class DetectorExtractorFactory {
             double takeOffAngle = extractTakeOffAngle(detectorElement);
             double azimuthAngle = extractAzimuthAngle(detectorElement);
             int xBins =
-                    Integer.getInteger(detectorElement.getChild("xbins")
+                    Integer.parseInt(detectorElement.getChild("xbins")
                             .getText());
             int yBins =
-                    Integer.getInteger(detectorElement.getChild("ybins")
+                    Integer.parseInt(detectorElement.getChild("ybins")
                             .getText());
             int zBins =
-                    Integer.getInteger(detectorElement.getChild("zbins")
+                    Integer.parseInt(detectorElement.getChild("zbins")
                             .getText());
 
             return new PhotonEmissionMapDetector(takeOffAngle, azimuthAngle,
@@ -221,7 +221,7 @@ public class DetectorExtractorFactory {
         protected int extractChannels(Element detectorElement)
                 throws IOException {
             Element channelsElement = detectorElement.getChild("channels");
-            return Integer.getInteger(channelsElement.getText());
+            return Integer.parseInt(channelsElement.getText());
         }
 
 
@@ -283,7 +283,7 @@ public class DetectorExtractorFactory {
         protected int extractChannels(Element detectorElement)
                 throws IOException {
             Element channelsElement = detectorElement.getChild("channels");
-            return Integer.getInteger(channelsElement.getText());
+            return Integer.parseInt(channelsElement.getText());
         }
 
 
