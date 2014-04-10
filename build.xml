@@ -216,7 +216,7 @@ exit 0</echo>
         <!-- Create deb -->
         <deb package="libpymontecarlo-java"
              todir="${dist.dir}"
-             version="${version}"
+             version="${version}-1"
              section="java"
              priority="standard"
              architecture="all"
@@ -226,7 +226,7 @@ exit 0</echo>
              postrm="${dist.dir}/postrm">
             <maintainer name="Philippe Pinard"
                         email="philippe.pinard@gmail.com" />
-            <description synopsis="Library to run DTSA-II/NISTMonte simulations with pyMonteCarlo">pyMonteCarlo is a programming interface to run identical simulations using different Monte Carlo programs.</description>
+            <description synopsis="Library to run DTSA-II/NISTMonte simulations with pyMonteCarlo">pyMonteCarlo is a programming interface to run identical simulations using different Monte Carlo programs. This library can be used to run simulations using the Monte Carlo code in DTSA-II (NISTMonte).</description>
             <tarfileset dir="${dist.dir}"
                         prefix="usr/share/libpymontecarlo-java/lib">
                 <include name="pymontecarlo-dtsa.jar" />
