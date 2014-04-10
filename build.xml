@@ -46,6 +46,8 @@
     <echo message="  dist.dir = ${dist.dir}" />
 
     <!-- Read the version file -->
+    <echo message="===&gt; Variables" />
+
     <property file="${src.dir}/version.prop" />
     <echo message="  version = ${version}" />
 
@@ -243,6 +245,13 @@ exit 0</echo>
                 <include name="changelog.gz" />
             </tarfileset>
         </deb>
+
+        <!-- Cleanup -->
+        <delete file="${dist.dir}/copyright" />
+        <delete file="${dist.dir}/changelog.gz" />
+        <delete file="${dist.dir}/postinst" />
+        <delete file="${dist.dir}/postrm" />
+        <delete file="${dist.dir}/pymontecarlo-dtsa.jar" />
     </target>
 
 
