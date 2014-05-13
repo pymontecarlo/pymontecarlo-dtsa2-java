@@ -287,25 +287,23 @@ public class GeometryExtractorFactoryTest {
                 new Element("verticalLayers");
         element.setAttribute("rotation", "0.0");
         element.setAttribute("tilt", Double.toString(Math.toRadians(30.0)));
+        element.setAttribute("depth", "-INF");
 
         element.addContent(createMaterialsElement());
         
         Element leftSubstrateElement = new Element("leftSubstrate");
         leftSubstrateElement.setAttribute("material", "1");
-        leftSubstrateElement.setAttribute("depth", "-INF");
         element.addContent(leftSubstrateElement);
 
         Element layersElement = new Element("layers");
         Element layerElement = new Element("layer");
         layerElement.setAttribute("material", "2");
         layerElement.setAttribute("thickness", "150e-9");
-        layerElement.setAttribute("depth", "-INF");
         layersElement.addContent(layerElement);
         element.addContent(layersElement);
         
         Element rightSubstrateElement = new Element("rightSubstrate");
         rightSubstrateElement.setAttribute("material", "3");
-        rightSubstrateElement.setAttribute("depth", "-INF");
         element.addContent(rightSubstrateElement);
 
         return element;

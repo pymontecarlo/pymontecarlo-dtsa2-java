@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jdom2.Attribute;
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
@@ -509,17 +508,23 @@ public class GeometryExtractorFactory {
 
             public final double thickness;
 
-            public final double depth;
 
 
-
-            public Layer(IMaterialScatterModel material, double thickness,
-                    double depth)
+            public Layer(IMaterialScatterModel material, double thickness)
             {
                 this.material = material;
                 this.thickness = thickness;
-                this.depth = depth;
             }
+        }
+        
+        protected double extractDepth(Element geometryElement) throws IOException{
+            double depth;
+            try {
+                depth = geometryElement.getAttribute("depth").getDoubleValue();
+            } catch (DataConversionException e) {
+                throw new IOException(e);
+            }
+            return depth;
         }
 
 
@@ -538,17 +543,14 @@ public class GeometryExtractorFactory {
             Element leftElement = geometryElement.getChild("leftSubstrate");
 
             int leftMaterialIndex;
-            double leftDepth;
             try {
                 leftMaterialIndex =
                         leftElement.getAttribute("material").getIntValue();
-                leftDepth = leftElement.getAttribute("depth").getDoubleValue();
             } catch (DataConversionException e) {
                 throw new IOException(e);
             }
 
-            layers.add(new Layer(materials.get(leftMaterialIndex), 0.1,
-                    leftDepth));
+            layers.add(new Layer(materials.get(leftMaterialIndex), 0.1));
             totalThickness += 0.1;
 
             // Layers
@@ -556,7 +558,7 @@ public class GeometryExtractorFactory {
 
             int materialIndex;
             IMaterialScatterModel material;
-            double thickness, depth;
+            double thickness;
             for (Element layerElement : layersElement.getChildren()) {
                 try {
                     materialIndex =
@@ -564,12 +566,11 @@ public class GeometryExtractorFactory {
                     thickness =
                             layerElement.getAttribute("thickness")
                                     .getDoubleValue();
-                    depth = layerElement.getAttribute("depth").getDoubleValue();
                 } catch (DataConversionException e) {
                     throw new IOException(e);
                 }
                 material = materials.get(materialIndex);
-                layers.add(new Layer(material, thickness, depth));
+                layers.add(new Layer(material, thickness));
                 totalThickness += thickness;
             }
 
@@ -577,18 +578,14 @@ public class GeometryExtractorFactory {
             Element rightElement = geometryElement.getChild("rightSubstrate");
 
             int rightMaterialIndex;
-            double rightDepth;
             try {
                 rightMaterialIndex =
                         rightElement.getAttribute("material").getIntValue();
-                rightDepth =
-                        rightElement.getAttribute("depth").getDoubleValue();
             } catch (DataConversionException e) {
                 throw new IOException(e);
             }
 
-            layers.add(new Layer(materials.get(rightMaterialIndex), 0.1,
-                    rightDepth));
+            layers.add(new Layer(materials.get(rightMaterialIndex), 0.1));
             totalThickness += 0.1;
 
             // Create regions
@@ -620,7 +617,7 @@ public class GeometryExtractorFactory {
 
     }
 
-    public static final GeometryExtractor VERTICAL_LAYERS=
+    public static final GeometryExtractor VERTICAL_LAYERS =
             new VerticalLayersExtractor();
 
     // /** Thin grain boundaries extractor. */
