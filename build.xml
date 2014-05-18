@@ -82,8 +82,10 @@
                includeAntRuntime="false">
             <include name="**/gov/nist/microanalysis/**/*" />
             <include name="**/flanagan/**/*" />
-            <exclude name="gov/nist/microanalysis/NISTMonte/MeshedRegion.java" />
-            <exclude name="gov/nist/microanalysis/NISTMonte/MeshElementRegion.java" />
+            <exclude name="**/gov/nist/microanalysis/EPQDatabase/*" />
+            <exclude name="**/gov/nist/microanalysis/EPQTools/*" />
+            <exclude name="**/gov/nist/microanalysis/NISTMonte/MeshedRegion.java" />
+            <exclude name="**/gov/nist/microanalysis/NISTMonte/MeshElementRegion.java" />
         </javac>
     </target>
 
@@ -121,7 +123,7 @@
                 <attribute name="Main-Class"
                            value="pymontecarlo.program.nistmonte.ui.cui.Main" />
                 <attribute name="Class-Path"
-                           value="nujan-1.4.1.1.jar jdom-2.0.4.jar commons-cli-1.2.jar xstream-1.4.1.jar xpp3-1.1.4c.jar junit.jar Jama-1.0.3.jar derby.jar derbynet.jar derbyclient.jar" />
+                           value="nujan-1.4.1.1.jar jdom-2.0.4.jar commons-cli-1.2.jar xstream-1.4.3.jar xpp3-1.1.4c.jar xpp3_min-1.1.4c junit.jar Jama-1.0.3.jar derby.jar derbynet.jar derbyclient.jar" />
             </manifest>
         </jar>
     </target>
