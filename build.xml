@@ -2,7 +2,7 @@
 
 
 
-<project basedir="." name="pymontecarlo-dtsa" default="help">
+<project basedir="." name="pymontecarlo-nistmonte-java" default="help">
 
     <!-- Dependencies -->
     <path id="libant.classpath">
@@ -109,7 +109,7 @@
     <target name="jar"
             description="Create jar for pymontecarlo"
             depends="compile-epq,compile-pymontecarlo">
-        <jar destfile="${dist.dir}/pymontecarlo-dtsa.jar">
+        <jar destfile="${dist.dir}/pymontecarlo-nistmonte.jar">
             <fileset dir="${build.dir}" includes="**" />
             <fileset dir="${src.dir}">
                 <include name="**" />
@@ -131,24 +131,24 @@
     <target name="dist-zip"
             description="Distribute pymontecarlo in a ZIP"
             depends="jar">
-        <zip destfile="${dist.dir}/pymontecarlo-dtsa-${version}.zip">
-            <zipfileset dir="${lib.dir}" prefix="pymontecarlo-dtsa">
+        <zip destfile="${dist.dir}/pymontecarlo-nistmonte-${version}.zip">
+            <zipfileset dir="${lib.dir}" prefix="pymontecarlo-nistmonte">
                 <include name="nujan*.jar" />
                 <include name="jdom*.jar" />
                 <include name="commons-cli*.jar" />
                 <include name="junit*.jar" />
             </zipfileset>
-            <zipfileset dir="${epq.lib.dir}" prefix="pymontecarlo-dtsa">
+            <zipfileset dir="${epq.lib.dir}" prefix="pymontecarlo-nistmonte">
                 <include name="xstream*.jar" />
                 <include name="xpp3*.jar" />
                 <include name="Jama*.jar" />
                 <include name="derby*.jar" />
             </zipfileset>
-            <zipfileset dir="${dist.dir}" prefix="pymontecarlo-dtsa">
-                <include name="pymontecarlo-dtsa.jar" />
+            <zipfileset dir="${dist.dir}" prefix="pymontecarlo-nistmonte">
+                <include name="pymontecarlo-nistmonte.jar" />
             </zipfileset>
         </zip>
-        <delete file="${dist.dir}/pymontecarlo-dtsa.jar" />
+        <delete file="${dist.dir}/pymontecarlo-nistmonte.jar" />
     </target>
 
     <target name="dist-deb"
@@ -185,7 +185,7 @@ set -e
 if [ "$1" = "configure" ] ; then
   echo "Configuring libpymontecarlo-java"
 
-  ln -s /usr/share/libpymontecarlo-java/lib/pymontecarlo-dtsa.jar /usr/share/java/pymontecarlo-dtsa.jar
+  ln -s /usr/share/libpymontecarlo-java/lib/pymontecarlo-nistmonte.jar /usr/share/java/pymontecarlo-nistmonte.jar
   
   if [ ! -f /usr/share/java/jdom2.jar ]; then
     ln -s /usr/share/libpymontecarlo-java/lib/jdom2.jar /usr/share/java/jdom2.jar
@@ -203,7 +203,7 @@ set -e
 if [ "$1" = "remove" ] ; then
   echo "Purging libpymontecarlo-java"
 
-  rm /usr/share/java/pymontecarlo-dtsa.jar
+  rm /usr/share/java/pymontecarlo-nistmonte.jar
             
   if [ ! -e /usr/share/java/jdom2.jar ]; then
     rm /usr/share/java/jdom2.jar
@@ -231,7 +231,7 @@ exit 0</echo>
             <description synopsis="Library to run DTSA-II/NISTMonte simulations with pyMonteCarlo">pyMonteCarlo is a programming interface to run identical simulations using different Monte Carlo programs. This library can be used to run simulations using the Monte Carlo code in DTSA-II (NISTMonte).</description>
             <tarfileset dir="${dist.dir}"
                         prefix="usr/share/libpymontecarlo-java/lib">
-                <include name="pymontecarlo-dtsa.jar" />
+                <include name="pymontecarlo-nistmonte.jar" />
             </tarfileset>
             <tarfileset dir="${lib.dir}"
                         fullpath="usr/share/libpymontecarlo-java/lib/nujan.jar">
@@ -253,7 +253,7 @@ exit 0</echo>
         <delete file="${dist.dir}/changelog.gz" />
         <delete file="${dist.dir}/postinst" />
         <delete file="${dist.dir}/postrm" />
-        <delete file="${dist.dir}/pymontecarlo-dtsa.jar" />
+        <delete file="${dist.dir}/pymontecarlo-nistmonte.jar" />
     </target>
 
 
