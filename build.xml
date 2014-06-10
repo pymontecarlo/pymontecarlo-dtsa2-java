@@ -179,41 +179,6 @@ License: GPLv3</echo>
             <arg value="${dist.dir}/changelog" />
         </exec>
 
-        <!-- Create postinst -->
-        <echo file="${dist.dir}/postinst">#!/bin/sh
-set -e
-if [ "$1" = "configure" ] ; then
-  echo "Configuring libpymontecarlo-java"
-
-  ln -s /usr/share/libpymontecarlo-java/lib/pymontecarlo-nistmonte.jar /usr/share/java/pymontecarlo-nistmonte.jar
-  
-  if [ ! -f /usr/share/java/jdom2.jar ]; then
-    ln -s /usr/share/libpymontecarlo-java/lib/jdom2.jar /usr/share/java/jdom2.jar
-  fi
-
-  if [ ! -f /usr/share/java/nujan.jar ]; then
-    ln -s /usr/share/libpymontecarlo-java/lib/nujan.jar /usr/share/java/nujan.jar
-  fi
-fi
-exit 0</echo>
-
-        <!-- Create postrm -->
-        <echo file="${dist.dir}/postrm">#!/bin/sh
-set -e
-if [ "$1" = "remove" ] ; then
-  echo "Purging libpymontecarlo-java"
-
-  rm /usr/share/java/pymontecarlo-nistmonte.jar
-            
-  if [ ! -e /usr/share/java/jdom2.jar ]; then
-    rm /usr/share/java/jdom2.jar
-  fi
-
-  if [ ! -e /usr/share/java/nujan.jar ]; then
-    rm /usr/share/java/nujan.jar
-  fi
-fi
-exit 0</echo>
 
         <!-- Create deb -->
         <deb package="libpymontecarlo-java"
@@ -222,37 +187,43 @@ exit 0</echo>
              section="java"
              priority="standard"
              architecture="all"
-             depends="libcommons-cli-java, libjama-java, sun-javadb-core | libderby-java, sun-javadb-client | libderbyclient-java, junit4, libxpp3-java, libxstream-java"
-             suggests="libjdom2-java"
-             postinst="${dist.dir}/postinst"
-             postrm="${dist.dir}/postrm">
+             depends="default-jre">
             <maintainer name="Philippe Pinard"
                         email="philippe.pinard@gmail.com" />
             <description synopsis="Library to run DTSA-II/NISTMonte simulations with pyMonteCarlo">pyMonteCarlo is a programming interface to run identical simulations using different Monte Carlo programs. This library can be used to run simulations using the Monte Carlo code in DTSA-II (NISTMonte).</description>
-            <tarfileset dir="${dist.dir}"
-                        prefix="usr/share/libpymontecarlo-java/lib">
-                <include name="pymontecarlo-nistmonte.jar" />
-            </tarfileset>
-            <tarfileset dir="${lib.dir}"
-                        fullpath="usr/share/libpymontecarlo-java/lib/nujan.jar">
-                <include name="nujan*.jar" />
-            </tarfileset>
-            <tarfileset dir="${lib.dir}"
-                        fullpath="usr/share/libpymontecarlo-java/lib/jdom2.jar">
-                <include name="jdom*.jar" />
-            </tarfileset>
+
             <tarfileset dir="${dist.dir}"
                         prefix="usr/share/doc/libpymontecarlo-java">
                 <include name="copyright" />
                 <include name="changelog.gz" />
             </tarfileset>
+
+            <tarfileset dir="${lib.dir}"
+                        prefix="usr/share/libpymontecarlo-java/lib">
+                <include name="nujan*.jar" />
+                <include name="jdom*.jar" />
+                <include name="commons-cli*.jar" />
+                <include name="junit*.jar" />
+            </tarfileset>
+            
+            <tarfileset dir="${epq.lib.dir}"
+                        prefix="usr/share/libpymontecarlo-java/lib">
+                <include name="xstream*.jar" />
+                <include name="xpp3*.jar" />
+                <include name="Jama*.jar" />
+                <include name="derby*.jar" />
+            </tarfileset>
+            
+            <tarfileset dir="${dist.dir}"
+                        prefix="usr/share/libpymontecarlo-java/lib">
+                <include name="pymontecarlo-nistmonte.jar" />
+            </tarfileset>
+
         </deb>
 
         <!-- Cleanup -->
         <delete file="${dist.dir}/copyright" />
         <delete file="${dist.dir}/changelog.gz" />
-        <delete file="${dist.dir}/postinst" />
-        <delete file="${dist.dir}/postrm" />
         <delete file="${dist.dir}/pymontecarlo-nistmonte.jar" />
     </target>
 
