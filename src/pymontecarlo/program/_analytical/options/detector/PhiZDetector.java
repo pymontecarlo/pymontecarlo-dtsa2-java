@@ -8,7 +8,6 @@ import java.util.Properties;
 import pymontecarlo.util.hdf5.HDF5Group;
 import gov.nist.microanalysis.EPQLibrary.AlgorithmUser;
 import gov.nist.microanalysis.EPQLibrary.Composition;
-import gov.nist.microanalysis.EPQLibrary.CorrectionAlgorithm;
 import gov.nist.microanalysis.EPQLibrary.CorrectionAlgorithm.PhiRhoZAlgorithm;
 import gov.nist.microanalysis.EPQLibrary.EPQException;
 import gov.nist.microanalysis.EPQLibrary.ElectronRange;
@@ -164,10 +163,9 @@ public class PhiZDetector extends AbstractPhotonDetector {
         Strategy strategy = AlgorithmUser.getGlobalStrategy();
         PhiRhoZAlgorithm corrAlg =
                 (PhiRhoZAlgorithm) strategy
-                        .getAlgorithm(CorrectionAlgorithm.class);
+                        .getAlgorithm(PhiRhoZAlgorithm.class);
         if (corrAlg == null)
             throw new NullPointerException("No correction algorithm defined");
-        System.out.println(corrAlg);
 
         double[] zs;
         double rz;
