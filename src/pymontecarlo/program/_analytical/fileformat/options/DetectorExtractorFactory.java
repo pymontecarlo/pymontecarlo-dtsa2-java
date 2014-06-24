@@ -8,7 +8,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 import pymontecarlo.program._analytical.options.detector.Detector;
-import pymontecarlo.program._analytical.options.detector.PhiRhoZDetector;
+import pymontecarlo.program._analytical.options.detector.PhiZDetector;
 import pymontecarlo.program._analytical.options.detector.PhotonIntensityDetector;
 
 /**
@@ -93,7 +93,7 @@ public class DetectorExtractorFactory {
     public static final DetectorExtractor PHOTON_INTENSITY =
             new PhotonIntensityDetectorExtractor();
 
-    protected static class PhiRhoZDetectorExtractor extends
+    protected static class PhiZDetectorExtractor extends
             AbstractDelimitedDetectorExtractor {
 
         /**
@@ -119,12 +119,12 @@ public class DetectorExtractorFactory {
             double azimuthAngle = extractAzimuthAngle(detectorElement);
             int channels = extractChannels(detectorElement);
 
-            return new PhiRhoZDetector(takeOffAngle, azimuthAngle, channels);
+            return new PhiZDetector(takeOffAngle, azimuthAngle, channels);
         }
     }
 
     /** Photon depth detector extractor. */
-    public static final DetectorExtractor PHIRHOZ =
-            new PhiRhoZDetectorExtractor();
+    public static final DetectorExtractor PHI_Z =
+            new PhiZDetectorExtractor();
 
 }

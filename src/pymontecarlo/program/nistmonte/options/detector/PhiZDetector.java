@@ -10,7 +10,7 @@ import gov.nist.microanalysis.NISTMonte.MonteCarloSS;
 import gov.nist.microanalysis.NISTMonte.Gen3.PhiRhoZ3;
 import gov.nist.microanalysis.NISTMonte.Gen3.XRayTransport3;
 
-public class PhotonDepthDetector extends AbstractPhotonDetector {
+public class PhiZDetector extends AbstractPhotonDetector {
 
     /** Number of channels in the PRZ distribution. */
     private final int channels;
@@ -23,7 +23,7 @@ public class PhotonDepthDetector extends AbstractPhotonDetector {
 
 
 
-    public PhotonDepthDetector(double takeOffAngle, double azimuthAngle,
+    public PhiZDetector(double takeOffAngle, double azimuthAngle,
             int channels) {
         super(takeOffAngle, azimuthAngle);
 
@@ -34,7 +34,7 @@ public class PhotonDepthDetector extends AbstractPhotonDetector {
 
 
 
-    public PhotonDepthDetector(double[] pos, int channels) {
+    public PhiZDetector(double[] pos, int channels) {
         super(pos);
 
         if (channels < 1)
@@ -144,7 +144,7 @@ public class PhotonDepthDetector extends AbstractPhotonDetector {
 
     @Override
     public String getPythonResultClass() {
-        return "PhotonDepthResult";
+        return "PhiZResult";
     }
 
 }

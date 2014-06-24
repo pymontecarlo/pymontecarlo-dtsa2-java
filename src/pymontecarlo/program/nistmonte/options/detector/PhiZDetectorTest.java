@@ -16,9 +16,9 @@ import pymontecarlo.util.TestCase;
 import pymontecarlo.util.hdf5.HDF5FileWriter;
 import pymontecarlo.util.hdf5.HDF5Group;
 
-public class PhotonDepthDetectorTest extends TestCase {
+public class PhiZDetectorTest extends TestCase {
 
-    private PhotonDepthDetector det;
+    private PhiZDetector det;
 
     private File resultsFile;
 
@@ -26,7 +26,7 @@ public class PhotonDepthDetectorTest extends TestCase {
 
     @Before
     public void setUp() throws Exception {
-        det = new PhotonDepthDetector(getDetectorPosition(), 100);
+        det = new PhiZDetector(getDetectorPosition(), 100);
         resultsFile = createTempFile("h5");
 
         MonteCarloSS mcss = getMonteCarloSS();

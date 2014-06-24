@@ -51,8 +51,8 @@ public class OptionsExtractor implements Extractor {
                 DetectorExtractorFactory.PHOTON_INTENSITY);
         ExtractorManager
                 .register("timeDetector", DetectorExtractorFactory.TIME);
-        ExtractorManager.register("photonDepthDetector",
-                DetectorExtractorFactory.PHOTON_DEPTH);
+        ExtractorManager.register("phiZDetector",
+                DetectorExtractorFactory.PHI_Z);
         ExtractorManager.register("photonRadialDetector",
                 DetectorExtractorFactory.PHOTON_RADIAL);
         ExtractorManager.register("photonEmissionMapDetector",

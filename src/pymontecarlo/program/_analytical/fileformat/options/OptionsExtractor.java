@@ -36,8 +36,8 @@ public class OptionsExtractor implements Extractor {
         // Detector
         ExtractorManager.register("photonIntensityDetector",
                 DetectorExtractorFactory.PHOTON_INTENSITY);
-        ExtractorManager.register("phiRhoZDetector",
-                DetectorExtractorFactory.PHIRHOZ);
+        ExtractorManager.register("phiZDetector",
+                DetectorExtractorFactory.PHI_Z);
 
         // Limit
         // No limit

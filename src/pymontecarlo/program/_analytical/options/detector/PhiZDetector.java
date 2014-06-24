@@ -18,21 +18,21 @@ import gov.nist.microanalysis.EPQLibrary.ToSI;
 import gov.nist.microanalysis.EPQLibrary.XRayTransition;
 import gov.nist.microanalysis.Utility.HistogramUtil;
 
-public class PhiRhoZDetector extends AbstractPhotonDetector {
+public class PhiZDetector extends AbstractPhotonDetector {
 
     /** Number of channels in the PRZ distribution. */
     private final int channels;
 
-    /** Z values for all PRZ distributions. */
-    private Map<XRayTransition, double[]> zPRZS = new HashMap<>();
+    /** Z values for all phi-z distributions. */
+    private Map<XRayTransition, double[]> zPZS = new HashMap<>();
 
-    private Map<XRayTransition, double[]> gnfPRZs = new HashMap<>();
+    private Map<XRayTransition, double[]> gnfPZs = new HashMap<>();
 
-    private Map<XRayTransition, double[]> enfPRZs = new HashMap<>();
+    private Map<XRayTransition, double[]> enfPZs = new HashMap<>();
 
 
 
-    public PhiRhoZDetector(double takeOffAngle, double azimuthAngle,
+    public PhiZDetector(double takeOffAngle, double azimuthAngle,
             int channels) {
         super(takeOffAngle, azimuthAngle);
 
@@ -43,7 +43,7 @@ public class PhiRhoZDetector extends AbstractPhotonDetector {
 
 
 
-    public PhiRhoZDetector(double[] pos, int channels) {
+    public PhiZDetector(double[] pos, int channels) {
         super(pos);
 
         if (channels < 1)
@@ -56,9 +56,9 @@ public class PhiRhoZDetector extends AbstractPhotonDetector {
     @Override
     public void reset() {
         super.reset();
-        zPRZS.clear();
-        gnfPRZs.clear();
-        enfPRZs.clear();
+        zPZS.clear();
+        gnfPZs.clear();
+        enfPZs.clear();
     }
 
 
@@ -80,13 +80,18 @@ public class PhiRhoZDetector extends AbstractPhotonDetector {
         double energy =
                 ToSI.keV(props
                         .getNumericProperty(SpectrumProperties.BeamEnergy));
+        double density =
+                ToSI.gPerCC(props
+                        .getNumericProperty(SpectrumProperties.SpecimenDensity));
 
-        double rzMax;
+        double rMax;
         for (XRayTransition xrt : findAllXRayTransitions(comp, props)) {
-            rzMax = electronRange.compute(comp, xrt.getDestination(), energy);
-            zPRZS.put(xrt, HistogramUtil.createBins(-rzMax, 0.0, channels));
-            gnfPRZs.put(xrt, new double[channels]);
-            enfPRZs.put(xrt, new double[channels]);
+            rMax =
+                    electronRange.compute(comp, xrt.getDestination(), energy)
+                            / density;
+            zPZS.put(xrt, HistogramUtil.createBins(-rMax, 0.0, channels));
+            gnfPZs.put(xrt, new double[channels]);
+            enfPZs.put(xrt, new double[channels]);
         }
     }
 
@@ -108,18 +113,18 @@ public class PhiRhoZDetector extends AbstractPhotonDetector {
         String transitionName;
         double[][] gnf, enf;
         HDF5Group transitionGroup;
-        for (XRayTransition trans : zPRZS.keySet()) {
+        for (XRayTransition trans : zPZS.keySet()) {
             transitionName = trans.getIUPACName();
             transitionGroup = group.createSubgroup(transitionName);
 
             gnf = new double[2][channels];
             enf = new double[2][channels];
 
-            gnf[0] = zPRZS.get(trans);
-            gnf[1] = gnfPRZs.get(trans);
+            gnf[0] = zPZS.get(trans);
+            gnf[1] = gnfPZs.get(trans);
 
-            enf[0] = zPRZS.get(trans);
-            enf[1] = enfPRZs.get(trans);
+            enf[0] = zPZS.get(trans);
+            enf[1] = enfPZs.get(trans);
 
             transitionGroup.createDataset("gnf", transpose(gnf));
             transitionGroup.createDataset("enf", transpose(enf));
@@ -142,7 +147,7 @@ public class PhiRhoZDetector extends AbstractPhotonDetector {
 
     @Override
     public String getPythonResultClass() {
-        return "PhiRhoZResult";
+        return "PhiZResult";
     }
 
 
@@ -152,6 +157,9 @@ public class PhiRhoZDetector extends AbstractPhotonDetector {
         SpectrumProperties props = getSpectrumProperties();
         Composition comp =
                 props.getCompositionProperty(SpectrumProperties.MicroanalyticalComposition);
+        double density =
+                ToSI.gPerCC(props
+                        .getNumericProperty(SpectrumProperties.SpecimenDensity));
 
         Strategy strategy = AlgorithmUser.getGlobalStrategy();
         PhiRhoZAlgorithm corrAlg =
@@ -159,18 +167,19 @@ public class PhiRhoZDetector extends AbstractPhotonDetector {
                         .getAlgorithm(CorrectionAlgorithm.class);
         if (corrAlg == null)
             throw new NullPointerException("No correction algorithm defined");
+        System.out.println(corrAlg);
 
         double[] zs;
         double rz;
-        for (XRayTransition xrt : gnfPRZs.keySet()) {
+        for (XRayTransition xrt : gnfPZs.keySet()) {
             corrAlg.initialize(comp, xrt.getDestination(), props);
 
-            zs = zPRZS.get(xrt);
+            zs = zPZS.get(xrt);
 
             for (int i = 0; i < zs.length; i++) {
-                rz = Math.abs(zs[i]);
-                gnfPRZs.get(xrt)[i] = corrAlg.computeCurve(rz);
-                enfPRZs.get(xrt)[i] = corrAlg.computeAbsorbedCurve(xrt, rz);
+                rz = Math.abs(zs[i]) * density;
+                gnfPZs.get(xrt)[i] = corrAlg.computeCurve(rz);
+                enfPZs.get(xrt)[i] = corrAlg.computeAbsorbedCurve(xrt, rz);
             }
         }
     }

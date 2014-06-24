@@ -9,7 +9,7 @@ import org.jdom2.Element;
 
 import pymontecarlo.program.nistmonte.options.detector.BackscatteredElectronRadialDetector;
 import pymontecarlo.program.nistmonte.options.detector.Detector;
-import pymontecarlo.program.nistmonte.options.detector.PhotonDepthDetector;
+import pymontecarlo.program.nistmonte.options.detector.PhiZDetector;
 import pymontecarlo.program.nistmonte.options.detector.PhotonEmissionMapDetector;
 import pymontecarlo.program.nistmonte.options.detector.PhotonIntensityDetector;
 import pymontecarlo.program.nistmonte.options.detector.PhotonRadialDetector;
@@ -111,7 +111,7 @@ public class DetectorExtractorFactory {
     /** Time detector extractor. */
     public static final DetectorExtractor TIME = new TimeDetectorExtractor();
 
-    protected static class PhotonDepthDetectorExtractor extends
+    protected static class PhiZDetectorExtractor extends
             AbstractDelimitedDetectorExtractor {
 
         /**
@@ -136,14 +136,13 @@ public class DetectorExtractorFactory {
             double azimuthAngle = extractAzimuthAngle(detectorElement);
             int channels = extractChannels(detectorElement);
 
-            return new PhotonDepthDetector(takeOffAngle, azimuthAngle, channels);
+            return new PhiZDetector(takeOffAngle, azimuthAngle, channels);
         }
 
     }
 
     /** Photon depth detector extractor. */
-    public static final DetectorExtractor PHOTON_DEPTH =
-            new PhotonDepthDetectorExtractor();
+    public static final DetectorExtractor PHI_Z = new PhiZDetectorExtractor();
 
     protected static class PhotonRadialDetectorExtractor extends
             AbstractDelimitedDetectorExtractor {
