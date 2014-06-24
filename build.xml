@@ -108,7 +108,7 @@
 
     <target name="jar"
             description="Create all jars"
-            depends="jar-nistmonte,jar-pap" />
+            depends="jar-nistmonte,jar-pap,jar-xpp,jar-proza" />
 
     <target name="jar-nistmonte"
             description="Create jar for pymontecarlo"
@@ -153,6 +153,50 @@
             </manifest>
         </jar>
     </target>
+
+    <target name="jar-xpp"
+            description="Create jar for pymontecarlo"
+            depends="compile-epq,compile-pymontecarlo">
+        <jar destfile="${dist.dir}/pymontecarlo-dtsa2-xpp.jar">
+            <fileset dir="${build.dir}" includes="**" />
+            <fileset dir="${src.dir}">
+                <include name="**" />
+            </fileset>
+            <fileset dir="${epq.src.dir}">
+                <include name="**/gov/nist/microanalysis/**/*" />
+                <include name="**/flanagan/**/*" />
+            </fileset>
+
+            <manifest>
+                <attribute name="Main-Class"
+                           value="pymontecarlo.program.xpp.ui.cui.Main" />
+                <attribute name="Class-Path"
+                           value="nujan-1.4.1.1.jar jdom-2.0.4.jar commons-cli-1.2.jar xstream-1.4.3.jar xpp3-1.1.4c.jar xpp3_min-1.1.4c junit.jar Jama-1.0.3.jar derby.jar derbynet.jar derbyclient.jar" />
+            </manifest>
+        </jar>
+    </target>
+    
+    <target name="jar-proza"
+                description="Create jar for pymontecarlo"
+                depends="compile-epq,compile-pymontecarlo">
+            <jar destfile="${dist.dir}/pymontecarlo-dtsa2-proza.jar">
+                <fileset dir="${build.dir}" includes="**" />
+                <fileset dir="${src.dir}">
+                    <include name="**" />
+                </fileset>
+                <fileset dir="${epq.src.dir}">
+                    <include name="**/gov/nist/microanalysis/**/*" />
+                    <include name="**/flanagan/**/*" />
+                </fileset>
+
+                <manifest>
+                    <attribute name="Main-Class"
+                               value="pymontecarlo.program.proza.ui.cui.Main" />
+                    <attribute name="Class-Path"
+                               value="nujan-1.4.1.1.jar jdom-2.0.4.jar commons-cli-1.2.jar xstream-1.4.3.jar xpp3-1.1.4c.jar xpp3_min-1.1.4c junit.jar Jama-1.0.3.jar derby.jar derbynet.jar derbyclient.jar" />
+                </manifest>
+            </jar>
+        </target>
 
     <target name="dist-zip"
             description="Distribute pymontecarlo in a ZIP"
