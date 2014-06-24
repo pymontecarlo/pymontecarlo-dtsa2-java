@@ -2,7 +2,7 @@
 
 
 
-<project basedir="." name="pymontecarlo-nistmonte-java" default="help">
+<project basedir="." name="pymontecarlo-dtsa2-java" default="help">
 
     <!-- Dependencies -->
     <path id="libant.classpath">
@@ -107,9 +107,13 @@
     </target>
 
     <target name="jar"
+            description="Create all jars"
+            depends="jar-nistmonte,jar-pap" />
+
+    <target name="jar-nistmonte"
             description="Create jar for pymontecarlo"
             depends="compile-epq,compile-pymontecarlo">
-        <jar destfile="${dist.dir}/pymontecarlo-nistmonte.jar">
+        <jar destfile="${dist.dir}/pymontecarlo-dtsa2-nistmonte.jar">
             <fileset dir="${build.dir}" includes="**" />
             <fileset dir="${src.dir}">
                 <include name="**" />
@@ -128,27 +132,49 @@
         </jar>
     </target>
 
+    <target name="jar-pap"
+            description="Create jar for pymontecarlo"
+            depends="compile-epq,compile-pymontecarlo">
+        <jar destfile="${dist.dir}/pymontecarlo-dtsa2-pap.jar">
+            <fileset dir="${build.dir}" includes="**" />
+            <fileset dir="${src.dir}">
+                <include name="**" />
+            </fileset>
+            <fileset dir="${epq.src.dir}">
+                <include name="**/gov/nist/microanalysis/**/*" />
+                <include name="**/flanagan/**/*" />
+            </fileset>
+
+            <manifest>
+                <attribute name="Main-Class"
+                           value="pymontecarlo.program.pap.ui.cui.Main" />
+                <attribute name="Class-Path"
+                           value="nujan-1.4.1.1.jar jdom-2.0.4.jar commons-cli-1.2.jar xstream-1.4.3.jar xpp3-1.1.4c.jar xpp3_min-1.1.4c junit.jar Jama-1.0.3.jar derby.jar derbynet.jar derbyclient.jar" />
+            </manifest>
+        </jar>
+    </target>
+
     <target name="dist-zip"
             description="Distribute pymontecarlo in a ZIP"
             depends="jar">
-        <zip destfile="${dist.dir}/pymontecarlo-nistmonte-${version}.zip">
-            <zipfileset dir="${lib.dir}" prefix="pymontecarlo-nistmonte">
+        <zip destfile="${dist.dir}/pymontecarlo-dtsa2-${version}.zip">
+            <zipfileset dir="${lib.dir}" prefix="pymontecarlo-dtsa2">
                 <include name="nujan*.jar" />
                 <include name="jdom*.jar" />
                 <include name="commons-cli*.jar" />
                 <include name="junit*.jar" />
             </zipfileset>
-            <zipfileset dir="${epq.lib.dir}" prefix="pymontecarlo-nistmonte">
+            <zipfileset dir="${epq.lib.dir}" prefix="pymontecarlo-dtsa2">
                 <include name="xstream*.jar" />
                 <include name="xpp3*.jar" />
                 <include name="Jama*.jar" />
                 <include name="derby*.jar" />
             </zipfileset>
-            <zipfileset dir="${dist.dir}" prefix="pymontecarlo-nistmonte">
-                <include name="pymontecarlo-nistmonte.jar" />
+            <zipfileset dir="${dist.dir}" prefix="pymontecarlo-dtsa2">
+                <include name="*.jar" />
             </zipfileset>
         </zip>
-        <delete file="${dist.dir}/pymontecarlo-nistmonte.jar" />
+        <delete dir="${dist.dir}" includes="*.jar" />
     </target>
 
     <target name="dist-deb"
@@ -156,7 +182,7 @@
             depends="jar">
         <!-- Create copyright -->
         <echo file="${dist.dir}/copyright">Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: libpymontecarlo-java
+Upstream-Name: libpymontecarlo-dtsa2-java
 Upstream-Contact: <![CDATA[Philippe Pinard <philippe.pinard@gmail.com>]]> 
 
 Files: *
@@ -169,7 +195,7 @@ License: GPLv3</echo>
                     pattern="EEE, dd MMM yyyy HH:mm:ss  ZZZZZ"
                     locale="en,GB" />
         </tstamp>
-        <echo file="${dist.dir}/changelog">libpymontecarlo-java (${version}) all; urgency=low
+        <echo file="${dist.dir}/changelog">libpymontecarlo-dtsa2-java (${version}) all; urgency=low
   * Release of ${version}.
  -- <![CDATA[Philippe Pinard <philippe.pinard@gmail.com>]]>  ${TODAY}</echo>
         <!-- Note: compression level can not be used in gzip task -->
@@ -181,7 +207,7 @@ License: GPLv3</echo>
 
 
         <!-- Create deb -->
-        <deb package="libpymontecarlo-java"
+        <deb package="libpymontecarlo-dtsa2-java"
              todir="${dist.dir}"
              version="${version}-1"
              section="java"
@@ -193,38 +219,40 @@ License: GPLv3</echo>
             <description synopsis="Library to run DTSA-II/NISTMonte simulations with pyMonteCarlo">pyMonteCarlo is a programming interface to run identical simulations using different Monte Carlo programs. This library can be used to run simulations using the Monte Carlo code in DTSA-II (NISTMonte).</description>
 
             <tarfileset dir="${dist.dir}"
-                        prefix="usr/share/doc/libpymontecarlo-java">
+                        prefix="usr/share/doc/libpymontecarlo-dtsa2-java">
                 <include name="copyright" />
                 <include name="changelog.gz" />
             </tarfileset>
 
             <tarfileset dir="${lib.dir}"
-                        prefix="usr/share/libpymontecarlo-java/lib">
+                        prefix="usr/share/libpymontecarlo-dtsa2-java/lib">
                 <include name="nujan*.jar" />
                 <include name="jdom*.jar" />
                 <include name="commons-cli*.jar" />
                 <include name="junit*.jar" />
             </tarfileset>
-            
+
             <tarfileset dir="${epq.lib.dir}"
-                        prefix="usr/share/libpymontecarlo-java/lib">
+                        prefix="usr/share/libpymontecarlo-dtsa2-java/lib">
                 <include name="xstream*.jar" />
                 <include name="xpp3*.jar" />
                 <include name="Jama*.jar" />
                 <include name="derby*.jar" />
             </tarfileset>
-            
+
             <tarfileset dir="${dist.dir}"
-                        prefix="usr/share/libpymontecarlo-java/lib">
-                <include name="pymontecarlo-nistmonte.jar" />
+                        prefix="usr/share/libpymontecarlo-dtsa2-java/lib">
+                <include name="*.jar" />
             </tarfileset>
 
         </deb>
 
         <!-- Cleanup -->
-        <delete file="${dist.dir}/copyright" />
-        <delete file="${dist.dir}/changelog.gz" />
-        <delete file="${dist.dir}/pymontecarlo-nistmonte.jar" />
+        <delete dir="${dist.dir}">
+            <include name="copyright" />
+            <include name="changelog.gz" />
+            <include name="*.jar" />
+        </delete>
     </target>
 
 

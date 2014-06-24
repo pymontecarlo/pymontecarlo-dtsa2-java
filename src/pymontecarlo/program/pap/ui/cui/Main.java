@@ -1,6 +1,6 @@
-package pymontecarlo.program.nistmonte.ui.cui;
+package pymontecarlo.program.pap.ui.cui;
 
-import pymontecarlo.program.nistmonte.Worker;
+import pymontecarlo.program.pap.Worker;
 import pymontecarlo.ui.cui.AbstractMain;
 
 /**
@@ -11,7 +11,7 @@ import pymontecarlo.ui.cui.AbstractMain;
  */
 public final class Main extends AbstractMain {
 
-    /**
+    /** 
      * Main entry.
      * 
      * @param args
