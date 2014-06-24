@@ -2,6 +2,7 @@ package pymontecarlo.program._analytical.fileformat.options;
 
 import gov.nist.microanalysis.EPQLibrary.Composition;
 import gov.nist.microanalysis.EPQLibrary.EPQException;
+import gov.nist.microanalysis.EPQLibrary.FromSI;
 import gov.nist.microanalysis.EPQLibrary.Material;
 import gov.nist.microanalysis.EPQLibrary.SpectrumProperties;
 
@@ -155,7 +156,7 @@ public class GeometryExtractorFactory {
             props.setCompositionProperty(
                     SpectrumProperties.MicroanalyticalComposition, material);
             props.setNumericProperty(SpectrumProperties.SpecimenDensity,
-                    material.getDensity());
+                    FromSI.gPerCC(material.getDensity()));
 
             return props;
         }
