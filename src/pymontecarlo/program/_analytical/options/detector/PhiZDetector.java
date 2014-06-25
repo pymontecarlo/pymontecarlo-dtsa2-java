@@ -3,7 +3,6 @@ package pymontecarlo.program._analytical.options.detector;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import pymontecarlo.util.hdf5.HDF5Group;
 import gov.nist.microanalysis.EPQLibrary.AlgorithmUser;
@@ -34,16 +33,6 @@ public class PhiZDetector extends AbstractPhotonDetector {
     public PhiZDetector(double takeOffAngle, double azimuthAngle,
             int channels) {
         super(takeOffAngle, azimuthAngle);
-
-        if (channels < 1)
-            throw new IllegalArgumentException("Channels < 1");
-        this.channels = channels;
-    }
-
-
-
-    public PhiZDetector(double[] pos, int channels) {
-        super(pos);
 
         if (channels < 1)
             throw new IllegalArgumentException("Channels < 1");
@@ -92,13 +81,6 @@ public class PhiZDetector extends AbstractPhotonDetector {
             gnfPZs.put(xrt, new double[channels]);
             enfPZs.put(xrt, new double[channels]);
         }
-    }
-
-
-
-    @Override
-    protected void createLog(Properties props) {
-        super.createLog(props);
     }
 
 

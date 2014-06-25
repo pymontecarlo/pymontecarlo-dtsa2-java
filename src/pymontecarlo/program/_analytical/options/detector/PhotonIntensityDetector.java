@@ -7,6 +7,7 @@ import gov.nist.microanalysis.EPQLibrary.CorrectionAlgorithm.PhiRhoZAlgorithm;
 import gov.nist.microanalysis.EPQLibrary.EPQException;
 import gov.nist.microanalysis.EPQLibrary.IonizationCrossSection;
 import gov.nist.microanalysis.EPQLibrary.SpectrumProperties;
+import gov.nist.microanalysis.EPQLibrary.SpectrumUtils;
 import gov.nist.microanalysis.EPQLibrary.Strategy;
 import gov.nist.microanalysis.EPQLibrary.ToSI;
 import gov.nist.microanalysis.EPQLibrary.XRayTransition;
@@ -14,7 +15,6 @@ import gov.nist.microanalysis.EPQLibrary.XRayTransition;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import pymontecarlo.util.hdf5.HDF5Dataset;
 import pymontecarlo.util.hdf5.HDF5Group;
@@ -45,26 +45,6 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
      */
     public PhotonIntensityDetector(double takeOffAngle, double azimuthAngle) {
         super(takeOffAngle, azimuthAngle);
-    }
-
-
-
-    /**
-     * Creates a new <code>PhotonIntensityDetector</code>.
-     * 
-     * @param position
-     *            detector position in the chamber (in meters)
-     */
-    public PhotonIntensityDetector(double[] position) {
-        super(position);
-    }
-
-
-
-    @Override
-    protected void createLog(Properties props) {
-        super.createLog(props);
-        props.putAll(getSpectrumProperties().getPropertyMap());
     }
 
 
@@ -116,6 +96,8 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
         double energy =
                 ToSI.keV(props
                         .getNumericProperty(SpectrumProperties.BeamEnergy));
+        System.out.println(SpectrumUtils.getExitAngle(props));
+        System.out.println(SpectrumUtils.getTakeOffAngle(props));
 
         Strategy strategy = AlgorithmUser.getGlobalStrategy();
         PhiRhoZAlgorithm corrAlg =

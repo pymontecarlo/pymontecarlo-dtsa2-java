@@ -7,10 +7,8 @@ import gov.nist.microanalysis.EPQLibrary.SpectrumProperties;
 import gov.nist.microanalysis.EPQLibrary.ToSI;
 import gov.nist.microanalysis.EPQLibrary.XRayTransition;
 import gov.nist.microanalysis.EPQLibrary.XRayTransitionSet;
-import gov.nist.microanalysis.Utility.Math2;
 
 import java.util.HashSet;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -21,23 +19,24 @@ import java.util.Set;
 public abstract class AbstractPhotonDetector extends AbstractDetector implements
         PhotonDetector {
 
-    /** Position of the detector in meters. */
-    private final double[] detectorPosition;
+    /** Elevation angle (in radians). */
+    private final double elevationAngle;
+
+    /** Azimuth angle (in radians). */
+    private final double azimuthAngle;
 
 
 
-    /**
-     * Creates a new <code>PhotonDetector</code>.
-     * 
-     * @param takeOffAngle
-     *            elevation from the x-y plane (in radians)
-     * @param azimuthAngle
-     *            counter-clockwise angle from the positive x-axis in the x-y
-     *            plane (in radians)
-     */
-    public AbstractPhotonDetector(double takeOffAngle, double azimuthAngle) {
-        this(new double[] { 1.0, Math.tan(azimuthAngle),
-                Math.tan(takeOffAngle) });
+    @Override
+    public double getElevationAngle() {
+        return elevationAngle;
+    }
+
+
+
+    @Override
+    public double getAzimuthAngle() {
+        return azimuthAngle;
     }
 
 
@@ -45,11 +44,15 @@ public abstract class AbstractPhotonDetector extends AbstractDetector implements
     /**
      * Creates a new <code>PhotonDetector</code>.
      * 
-     * @param pos
-     *            detector position in the chamber (in meters)
+     * @param elevationAngle
+     *            elevation from the x-y plane (in radians)
+     * @param azimuthAngle
+     *            counter-clockwise angle from the positive x-axis in the x-y
+     *            plane (in radians)
      */
-    public AbstractPhotonDetector(double[] pos) {
-        detectorPosition = Math2.normalize(pos);
+    public AbstractPhotonDetector(double elevationAngle, double azimuthAngle) {
+        this.elevationAngle = elevationAngle;
+        this.azimuthAngle = azimuthAngle;
     }
 
 
@@ -57,28 +60,8 @@ public abstract class AbstractPhotonDetector extends AbstractDetector implements
     @Override
     public void setup(SpectrumProperties props) throws EPQException {
         super.setup(props);
-        getSpectrumProperties().setDetectorPosition(getDetectorPosition(), 0.0);
-    }
-
-
-
-    @Override
-    protected void createLog(Properties props) {
-        super.createLog(props);
-
-        props.setProperty("detectorPosition.x",
-                Double.toString(detectorPosition[0]));
-        props.setProperty("detectorPosition.y",
-                Double.toString(detectorPosition[1]));
-        props.setProperty("detectorPosition.z",
-                Double.toString(detectorPosition[2]));
-    }
-
-
-
-    @Override
-    public double[] getDetectorPosition() {
-        return detectorPosition;
+        getSpectrumProperties().setDetectorPosition(getElevationAngle(),
+                getAzimuthAngle(), 0.001, 0.011);
     }
 
 
