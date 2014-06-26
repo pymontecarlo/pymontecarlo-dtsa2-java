@@ -3,7 +3,7 @@
 	<name>pymontecarlo-dtsa2-java</name>
 	<comment></comment>
 	<projects>
-		<project>EPQ</project>
+		<project>pymontecarlo-dtsa2-epq</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
