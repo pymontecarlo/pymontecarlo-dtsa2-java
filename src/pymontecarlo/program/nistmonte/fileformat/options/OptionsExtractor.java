@@ -69,7 +69,9 @@ public class OptionsExtractor implements Extractor {
                 .register("showersLimit", LimitExtractorFactory.SHOWERS);
 
         // Model
-        ExtractorManager.register("model", ModelExtractorFactory.ALL);
+        ExtractorManager.register("model", ModelExtractorFactory.REGISTERED);
+        ExtractorManager.register("userDefinedMassAbsorptionCoefficientModel",
+                ModelExtractorFactory.USER_DEFINED_MASS_ABSORPTION_COEFFICIENT);
     }
 
     public static final String VERSION = "6";

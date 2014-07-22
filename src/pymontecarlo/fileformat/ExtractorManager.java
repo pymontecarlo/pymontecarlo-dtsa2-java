@@ -16,7 +16,8 @@ public class ExtractorManager {
 
 
     public static void register(String tag, Extractor klass) {
-        if (extractors.put(tag, klass) != null)
+        Extractor previous = extractors.put(tag, klass);
+        if (previous != null && previous != klass)
             throw new IllegalArgumentException("A class (" + klass
                     + ") is already registered with the tag (" + tag + ")");
     }

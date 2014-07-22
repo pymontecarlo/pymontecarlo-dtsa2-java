@@ -1,6 +1,7 @@
 package pymontecarlo.fileformat.options;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import gov.nist.microanalysis.EPQLibrary.AbsoluteIonizationCrossSection;
 import gov.nist.microanalysis.EPQLibrary.AlgorithmClass;
 import gov.nist.microanalysis.EPQLibrary.BetheElectronEnergyLoss;
@@ -10,6 +11,7 @@ import gov.nist.microanalysis.EPQLibrary.MeanIonizationPotential;
 import gov.nist.microanalysis.EPQLibrary.NISTMottScatteringAngle;
 import gov.nist.microanalysis.EPQLibrary.RandomizedScatterFactory;
 import gov.nist.microanalysis.EPQLibrary.Strategy;
+import gov.nist.microanalysis.EPQLibrary.ToSI;
 
 import java.io.IOException;
 
@@ -17,12 +19,10 @@ import org.jdom2.Element;
 import org.junit.Before;
 import org.junit.Test;
 
+import pymontecarlo.fileformat.ExtractorManager;
 import pymontecarlo.program.nistmonte.options.model.FluorescenceMC;
 
 public class ModelExtractorFactoryTest {
-
-
-
 
     @Before
     public void setUp() throws Exception {
@@ -47,7 +47,7 @@ public class ModelExtractorFactoryTest {
         Element element = createElasticCrossSectionModelElement();
 
         // Extrator
-        Strategy strategy = ModelExtractorFactory.ALL.extract(element);
+        Strategy strategy = ModelExtractorFactory.REGISTERED.extract(element);
 
         // Test
         AlgorithmClass alg =
@@ -74,7 +74,7 @@ public class ModelExtractorFactoryTest {
         Element element = createIonizationCrossSectionModelElement();
 
         // Extrator
-        Strategy strategy = ModelExtractorFactory.ALL.extract(element);
+        Strategy strategy = ModelExtractorFactory.REGISTERED.extract(element);
 
         // Test
         AlgorithmClass alg =
@@ -101,7 +101,7 @@ public class ModelExtractorFactoryTest {
         Element element = createIonizationPotentialModelElement();
 
         // Extrator
-        Strategy strategy = ModelExtractorFactory.ALL.extract(element);
+        Strategy strategy = ModelExtractorFactory.REGISTERED.extract(element);
 
         // Test
         AlgorithmClass alg =
@@ -128,7 +128,7 @@ public class ModelExtractorFactoryTest {
         Element element = createEnergyLossModelElement();
 
         // Extrator
-        Strategy strategy = ModelExtractorFactory.ALL.extract(element);
+        Strategy strategy = ModelExtractorFactory.REGISTERED.extract(element);
 
         // Test
         AlgorithmClass alg =
@@ -155,14 +155,16 @@ public class ModelExtractorFactoryTest {
         Element element = createMassAbsorptionCoefficientModelElement();
 
         // Extrator
-        Strategy strategy = ModelExtractorFactory.ALL.extract(element);
+        Strategy strategy = ModelExtractorFactory.REGISTERED.extract(element);
 
         // Test
         AlgorithmClass alg =
                 strategy.getAlgorithm(MassAbsorptionCoefficient.class);
         assertEquals(MassAbsorptionCoefficient.Null, alg);
     }
-    
+
+
+
     public static Element createFluorescenceModelElement() {
         Element element = new Element("model");
 
@@ -180,11 +182,59 @@ public class ModelExtractorFactoryTest {
         Element element = createFluorescenceModelElement();
 
         // Extrator
-        Strategy strategy = ModelExtractorFactory.ALL.extract(element);
+        Strategy strategy = ModelExtractorFactory.REGISTERED.extract(element);
 
         // Test
         AlgorithmClass alg =
                 strategy.getAlgorithm(FluorescenceMC.class);
         assertEquals(FluorescenceMC.FluorescenceCompton, alg);
+    }
+
+
+
+    public static Element createUserDefinedMassAbsorptionCoefficientModelElement() {
+        Element element =
+                new Element("userDefinedMassAbsorptionCoefficientModel");
+
+        element.setAttribute("type", "mass absorption coefficient");
+        element.setAttribute("name", "user defined mass absorption coefficient");
+
+        Element subelement = new Element("model");
+        subelement.setAttribute("type", "mass absorption coefficient");
+        subelement.setAttribute("name", "Henke 1993");
+        element.addContent(subelement);
+
+        subelement = new Element("mac");
+        subelement.setAttribute("absorber", "29");
+        subelement.setAttribute("energy", "8904.0");
+        subelement.setText("200");
+        element.addContent(subelement);
+
+        return element;
+    }
+
+
+
+    @Test
+    public void testUserDefinedMassAbsorptionCoefficientModel()
+            throws IOException {
+        // XML element
+        Element element =
+                createUserDefinedMassAbsorptionCoefficientModelElement();
+
+        // Extrator
+        ExtractorManager.register("model", ModelExtractorFactory.REGISTERED);
+        Strategy strategy =
+                ModelExtractorFactory.USER_DEFINED_MASS_ABSORPTION_COEFFICIENT
+                        .extract(element);
+
+        // Test
+        MassAbsorptionCoefficient mac =
+                (MassAbsorptionCoefficient) strategy
+                        .getAlgorithm(MassAbsorptionCoefficient.class);
+        assertTrue(mac instanceof MassAbsorptionCoefficient.UserSpecifiedCoefficient);
+        assertEquals(200.0,
+                mac.compute(gov.nist.microanalysis.EPQLibrary.Element.Cu,
+                        ToSI.eV(8904.0)), 1e-4);
     }
 }
