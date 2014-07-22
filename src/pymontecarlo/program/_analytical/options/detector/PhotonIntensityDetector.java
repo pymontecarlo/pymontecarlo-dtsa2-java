@@ -7,13 +7,14 @@ import gov.nist.microanalysis.EPQLibrary.CorrectionAlgorithm.PhiRhoZAlgorithm;
 import gov.nist.microanalysis.EPQLibrary.EPQException;
 import gov.nist.microanalysis.EPQLibrary.IonizationCrossSection;
 import gov.nist.microanalysis.EPQLibrary.SpectrumProperties;
-import gov.nist.microanalysis.EPQLibrary.SpectrumUtils;
 import gov.nist.microanalysis.EPQLibrary.Strategy;
 import gov.nist.microanalysis.EPQLibrary.ToSI;
 import gov.nist.microanalysis.EPQLibrary.XRayTransition;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pymontecarlo.util.hdf5.HDF5Dataset;
@@ -26,11 +27,13 @@ import pymontecarlo.util.hdf5.HDF5Group;
  */
 public class PhotonIntensityDetector extends AbstractPhotonDetector {
 
-    private Map<XRayTransition, Double> enfIntensities = new HashMap<>();
+    private final List<XRayTransition> transitions;
 
-    private Map<XRayTransition, Double> etIntensities = new HashMap<>();
+    private final Map<XRayTransition, Double> enfIntensities;
 
-    private Map<XRayTransition, Double> gnfIntensities = new HashMap<>();
+    private final Map<XRayTransition, Double> etIntensities;
+
+    private final Map<XRayTransition, Double> gnfIntensities;
 
 
 
@@ -43,8 +46,16 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
      *            counter-clockwise angle from the positive x-axis in the x-y
      *            plane (in radians)
      */
-    public PhotonIntensityDetector(double takeOffAngle, double azimuthAngle) {
+    public PhotonIntensityDetector(double takeOffAngle, double azimuthAngle,
+            List<XRayTransition> transitions) {
         super(takeOffAngle, azimuthAngle);
+        
+        this.transitions = new ArrayList<>();
+        this.transitions.addAll(transitions);
+        
+        enfIntensities = new HashMap<>();
+        etIntensities = new HashMap<>();
+        gnfIntensities = new HashMap<>();
     }
 
 
@@ -68,7 +79,7 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
         String transitionName;
         HDF5Dataset ds;
         int[][] emptyData = new int[][] { { 0 } };
-        for (XRayTransition transition : etIntensities.keySet()) {
+        for (XRayTransition transition : transitions) {
             transitionName = transition.getIUPACName();
 
             ds = group.createDataset(transitionName, emptyData);
@@ -89,6 +100,20 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
 
 
     @Override
+    public void setup(SpectrumProperties props) throws EPQException {
+        super.setup(props);
+
+        props = getSpectrumProperties();
+        Composition comp =
+                props.getCompositionProperty(SpectrumProperties.MicroanalyticalComposition);
+
+        if (transitions.isEmpty())
+            transitions.addAll(findAllXRayTransitions(comp, props));
+    }
+
+
+
+    @Override
     public void run() throws EPQException {
         SpectrumProperties props = getSpectrumProperties();
         Composition comp =
@@ -96,9 +121,8 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
         double energy =
                 ToSI.keV(props
                         .getNumericProperty(SpectrumProperties.BeamEnergy));
-        System.out.println(SpectrumUtils.getExitAngle(props));
-        System.out.println(SpectrumUtils.getTakeOffAngle(props));
 
+        // Create strategy
         Strategy strategy = AlgorithmUser.getGlobalStrategy();
         PhiRhoZAlgorithm corrAlg =
                 (PhiRhoZAlgorithm) strategy
@@ -111,15 +135,24 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
         if (icx == null)
             icx = AbsoluteIonizationCrossSection.BoteSalvat2008;
 
+        // Calculate intensities
         double q, wf;
-        for (XRayTransition xrt : findAllXRayTransitions(comp, props)) {
-            corrAlg.initialize(comp, xrt.getDestination(), props);
-            q = icx.computeShell(xrt.getDestination(), energy);
-            wf = comp.weightFraction(xrt.getElement(), false);
+        for (XRayTransition xrt : transitions) {
+            if (comp.containsElement(xrt.getElement())) {
+                corrAlg.initialize(comp, xrt.getDestination(), props);
+                q = icx.computeShell(xrt.getDestination(), energy);
+                wf = comp.weightFraction(xrt.getElement(), false);
 
-            etIntensities.put(xrt, corrAlg.computeZAFCorrection(xrt) * q * wf);
-            enfIntensities.put(xrt, corrAlg.computeZACorrection(xrt) * q * wf);
-            gnfIntensities.put(xrt, corrAlg.generated(xrt) * q * wf);
+                etIntensities.put(xrt, corrAlg.computeZAFCorrection(xrt) * q
+                        * wf);
+                enfIntensities.put(xrt, corrAlg.computeZACorrection(xrt) * q
+                        * wf);
+                gnfIntensities.put(xrt, corrAlg.generated(xrt) * q * wf);
+            } else {
+                etIntensities.put(xrt, 0.0);
+                enfIntensities.put(xrt, 0.0);
+                gnfIntensities.put(xrt, 0.0);
+            }
         }
 
     }

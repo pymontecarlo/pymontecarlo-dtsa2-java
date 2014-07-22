@@ -1,7 +1,9 @@
 package pymontecarlo.program._analytical.options.detector;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pymontecarlo.util.hdf5.HDF5Group;
@@ -22,21 +24,30 @@ public class PhiZDetector extends AbstractPhotonDetector {
     private final int channels;
 
     /** Z values for all phi-z distributions. */
-    private Map<XRayTransition, double[]> zPZS = new HashMap<>();
+    private final List<XRayTransition> transitions;
 
-    private Map<XRayTransition, double[]> gnfPZs = new HashMap<>();
+    private final Map<XRayTransition, double[]> zPZS;
 
-    private Map<XRayTransition, double[]> enfPZs = new HashMap<>();
+    private final Map<XRayTransition, double[]> gnfPZs;
+
+    private final Map<XRayTransition, double[]> enfPZs;
 
 
 
     public PhiZDetector(double takeOffAngle, double azimuthAngle,
-            int channels) {
+            int channels, List<XRayTransition> transitions) {
         super(takeOffAngle, azimuthAngle);
 
         if (channels < 1)
             throw new IllegalArgumentException("Channels < 1");
         this.channels = channels;
+
+        this.transitions = new ArrayList<>();
+        this.transitions.addAll(transitions);
+        
+        zPZS = new HashMap<>();
+        gnfPZs = new HashMap<>();
+        enfPZs = new HashMap<>();
     }
 
 
@@ -55,13 +66,6 @@ public class PhiZDetector extends AbstractPhotonDetector {
     public void setup(SpectrumProperties props) throws EPQException {
         super.setup(props);
 
-        // Calculate maximum depth
-        Strategy strategy = AlgorithmUser.getGlobalStrategy();
-        ElectronRange electronRange =
-                (ElectronRange) strategy.getAlgorithm(ElectronRange.class);
-        if (electronRange == null)
-            electronRange = ElectronRange.Pouchou1991;
-
         props = getSpectrumProperties();
         Composition comp =
                 props.getCompositionProperty(SpectrumProperties.MicroanalyticalComposition);
@@ -72,8 +76,19 @@ public class PhiZDetector extends AbstractPhotonDetector {
                 ToSI.gPerCC(props
                         .getNumericProperty(SpectrumProperties.SpecimenDensity));
 
+        // Calculate x-ray transitions (if needed)
+        if (transitions.isEmpty())
+            transitions.addAll(findAllXRayTransitions(comp, props));
+
+        // Calculate maximum depth
+        Strategy strategy = AlgorithmUser.getGlobalStrategy();
+        ElectronRange electronRange =
+                (ElectronRange) strategy.getAlgorithm(ElectronRange.class);
+        if (electronRange == null)
+            electronRange = ElectronRange.Pouchou1991;
+
         double rMax;
-        for (XRayTransition xrt : findAllXRayTransitions(comp, props)) {
+        for (XRayTransition xrt : transitions) {
             rMax =
                     electronRange.compute(comp, xrt.getDestination(), energy)
                             / density;
@@ -94,7 +109,7 @@ public class PhiZDetector extends AbstractPhotonDetector {
         String transitionName;
         double[][] gnf, enf;
         HDF5Group transitionGroup;
-        for (XRayTransition trans : zPZS.keySet()) {
+        for (XRayTransition trans : transitions) {
             transitionName = trans.getIUPACName();
             transitionGroup = group.createSubgroup(transitionName);
 
@@ -142,6 +157,7 @@ public class PhiZDetector extends AbstractPhotonDetector {
                 ToSI.gPerCC(props
                         .getNumericProperty(SpectrumProperties.SpecimenDensity));
 
+        // Create strategy
         Strategy strategy = AlgorithmUser.getGlobalStrategy();
         PhiRhoZAlgorithm corrAlg =
                 (PhiRhoZAlgorithm) strategy
@@ -149,17 +165,25 @@ public class PhiZDetector extends AbstractPhotonDetector {
         if (corrAlg == null)
             throw new NullPointerException("No correction algorithm defined");
 
+        // Calculate PZs
         double[] zs;
         double rz;
-        for (XRayTransition xrt : gnfPZs.keySet()) {
-            corrAlg.initialize(comp, xrt.getDestination(), props);
-
+        for (XRayTransition xrt : transitions) {
             zs = zPZS.get(xrt);
 
-            for (int i = 0; i < zs.length; i++) {
-                rz = Math.abs(zs[i]) * density;
-                gnfPZs.get(xrt)[i] = corrAlg.computeCurve(rz);
-                enfPZs.get(xrt)[i] = corrAlg.computeAbsorbedCurve(xrt, rz);
+            if (comp.containsElement(xrt.getElement())) {
+                corrAlg.initialize(comp, xrt.getDestination(), props);
+
+                for (int i = 0; i < zs.length; i++) {
+                    rz = Math.abs(zs[i]) * density;
+                    gnfPZs.get(xrt)[i] = corrAlg.computeCurve(rz);
+                    enfPZs.get(xrt)[i] = corrAlg.computeAbsorbedCurve(xrt, rz);
+                }
+            } else {
+                for (int i = 0; i < zs.length; i++) {
+                    gnfPZs.get(xrt)[i] = 0.0;
+                    enfPZs.get(xrt)[i] = 0.0;
+                }
             }
         }
     }

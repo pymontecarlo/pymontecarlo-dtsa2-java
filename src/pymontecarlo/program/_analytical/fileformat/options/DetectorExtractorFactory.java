@@ -1,8 +1,11 @@
 package pymontecarlo.program._analytical.fileformat.options;
 
 import gov.nist.microanalysis.EPQLibrary.EPQException;
+import gov.nist.microanalysis.EPQLibrary.XRayTransition;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jdom2.DataConversionException;
 import org.jdom2.Element;
@@ -72,6 +75,32 @@ public class DetectorExtractorFactory {
             return (azimuthMin + azimuthMax) / 2.0;
         }
 
+
+
+        protected List<XRayTransition> extractTransitions(
+                Element detectorElement) throws IOException {
+            List<XRayTransition> transitions = new ArrayList<>();
+
+            int z, src, dest;
+            gov.nist.microanalysis.EPQLibrary.Element element;
+            for (Element subelement : detectorElement.getChildren("transition")) {
+                try {
+                    z = subelement.getAttribute("z").getIntValue();
+                    src = subelement.getAttribute("src").getIntValue();
+                    dest = subelement.getAttribute("dest").getIntValue();
+                } catch (DataConversionException e) {
+                    throw new IOException(e);
+                }
+
+                element =
+                        gov.nist.microanalysis.EPQLibrary.Element
+                                .byAtomicNumber(z);
+                transitions.add(new XRayTransition(element, src - 1, dest - 1));
+            }
+
+            return transitions;
+        }
+
     }
 
     protected static class PhotonIntensityDetectorExtractor extends
@@ -83,8 +112,11 @@ public class DetectorExtractorFactory {
                 EPQException {
             double takeOffAngle = extractTakeOffAngle(detectorElement);
             double azimuthAngle = extractAzimuthAngle(detectorElement);
+            List<XRayTransition> transitions =
+                    extractTransitions(detectorElement);
 
-            return new PhotonIntensityDetector(takeOffAngle, azimuthAngle);
+            return new PhotonIntensityDetector(takeOffAngle, azimuthAngle,
+                    transitions);
         }
 
     }
@@ -118,8 +150,11 @@ public class DetectorExtractorFactory {
             double takeOffAngle = extractTakeOffAngle(detectorElement);
             double azimuthAngle = extractAzimuthAngle(detectorElement);
             int channels = extractChannels(detectorElement);
+            List<XRayTransition> transitions =
+                    extractTransitions(detectorElement);
 
-            return new PhiZDetector(takeOffAngle, azimuthAngle, channels);
+            return new PhiZDetector(takeOffAngle, azimuthAngle, channels,
+                    transitions);
         }
     }
 
