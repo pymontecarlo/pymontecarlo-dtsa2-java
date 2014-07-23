@@ -4,8 +4,12 @@ import gov.nist.microanalysis.EPQLibrary.AbsoluteIonizationCrossSection;
 import gov.nist.microanalysis.EPQLibrary.AlgorithmUser;
 import gov.nist.microanalysis.EPQLibrary.Composition;
 import gov.nist.microanalysis.EPQLibrary.CorrectionAlgorithm.PhiRhoZAlgorithm;
+import gov.nist.microanalysis.EPQLibrary.AtomicShell;
 import gov.nist.microanalysis.EPQLibrary.EPQException;
+import gov.nist.microanalysis.EPQLibrary.Element;
+import gov.nist.microanalysis.EPQLibrary.FluorescenceYield;
 import gov.nist.microanalysis.EPQLibrary.IonizationCrossSection;
+import gov.nist.microanalysis.EPQLibrary.PhysicalConstants;
 import gov.nist.microanalysis.EPQLibrary.SpectrumProperties;
 import gov.nist.microanalysis.EPQLibrary.Strategy;
 import gov.nist.microanalysis.EPQLibrary.ToSI;
@@ -49,10 +53,10 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
     public PhotonIntensityDetector(double takeOffAngle, double azimuthAngle,
             List<XRayTransition> transitions) {
         super(takeOffAngle, azimuthAngle);
-        
+
         this.transitions = new ArrayList<>();
         this.transitions.addAll(transitions);
-        
+
         enfIntensities = new HashMap<>();
         etIntensities = new HashMap<>();
         gnfIntensities = new HashMap<>();
@@ -134,20 +138,35 @@ public class PhotonIntensityDetector extends AbstractPhotonDetector {
                         .getAlgorithm(IonizationCrossSection.class);
         if (icx == null)
             icx = AbsoluteIonizationCrossSection.BoteSalvat2008;
+        FluorescenceYield fy =
+                (FluorescenceYield) strategy
+                        .getAlgorithm(FluorescenceYield.class);
 
         // Calculate intensities
-        double q, wf;
+        Element element;
+        AtomicShell shell;
+        double q, wf, yield, lineWeight, atomicWeight, factor;
         for (XRayTransition xrt : transitions) {
-            if (comp.containsElement(xrt.getElement())) {
-                corrAlg.initialize(comp, xrt.getDestination(), props);
-                q = icx.computeShell(xrt.getDestination(), energy);
-                wf = comp.weightFraction(xrt.getElement(), false);
+            element = xrt.getElement();
 
-                etIntensities.put(xrt, corrAlg.computeZAFCorrection(xrt) * q
-                        * wf);
-                enfIntensities.put(xrt, corrAlg.computeZACorrection(xrt) * q
-                        * wf);
-                gnfIntensities.put(xrt, corrAlg.generated(xrt) * q * wf);
+            if (comp.containsElement(element)) {
+                shell = xrt.getDestination();
+                corrAlg.initialize(comp, shell, props);
+                q = icx.computeShell(shell, energy);
+                wf = comp.weightFraction(element, false);
+                yield = fy.compute(shell);
+                atomicWeight = element.getAtomicWeight();
+                lineWeight = xrt.getWeight(XRayTransition.NormalizeFamily);
+
+                factor =
+                        (q * yield * lineWeight)
+                                * (wf / atomicWeight * PhysicalConstants.AvagadroNumber);
+
+                etIntensities.put(xrt, corrAlg.computeZAFCorrection(xrt)
+                        * factor);
+                enfIntensities.put(xrt, corrAlg.computeZACorrection(xrt)
+                        * factor);
+                gnfIntensities.put(xrt, corrAlg.generated(xrt) * factor);
             } else {
                 etIntensities.put(xrt, 0.0);
                 enfIntensities.put(xrt, 0.0);
