@@ -44,6 +44,28 @@ public class HDF5Group extends HDF5Attributer {
 
 
 
+    public HDF5Dataset createDataset(String name, int[] data) {
+        int[] dims = { data.length };
+        HDF5Dataset dataset = new HDF5Dataset(HDF5Type.FLOAT, data, dims);
+        if (datasets.put(name, dataset) != null)
+            throw new IllegalArgumentException("Dataset already exists: "
+                    + name);
+        return dataset;
+    }
+
+
+
+    public HDF5Dataset createDataset(String name, double[] data) {
+        int[] dims = { data.length };
+        HDF5Dataset dataset = new HDF5Dataset(HDF5Type.FLOAT, data, dims);
+        if (datasets.put(name, dataset) != null)
+            throw new IllegalArgumentException("Dataset already exists: "
+                    + name);
+        return dataset;
+    }
+
+
+
     public HDF5Dataset createDataset(String name, int[][] data) {
         int[] dims = { data.length, data[0].length };
         HDF5Dataset dataset = new HDF5Dataset(HDF5Type.INTEGER, data, dims);
