@@ -2,6 +2,8 @@ package gov.nist.microanalysis.NISTMonte;
 
 import gov.nist.microanalysis.EPQLibrary.XRayTransition;
 import gov.nist.microanalysis.NISTMonte.Gen3.BaseXRayGeneration3;
+import gov.nist.microanalysis.NISTMonte.Gen3.BaseXRayGeneration3.CharacteristicXRay;
+import gov.nist.microanalysis.NISTMonte.Gen3.BaseXRayGeneration3.XRay;
 import gov.nist.microanalysis.NISTMonte.Gen3.XRayTransport3;
 import gov.nist.microanalysis.Utility.HistogramDouble3D;
 import gov.nist.microanalysis.Utility.HistogramUtil;
@@ -56,12 +58,12 @@ public class PhotonEmissionMapListener implements ActionListener {
         switch (ae.getID()) {
         case BaseXRayGeneration3.XRayGeneration: {
             for (int i = xrayEventListener.getEventCount() - 1; i >= 0; i--) {
-                XRayTransport3.XRayTr xrtransport =
-                        (XRayTransport3.XRayTr) xrayEventListener.getXRay(i);
-                XRayTransition xrt = xrtransport.getTransition();
+                XRay xray = xrayEventListener.getXRay(i);
 
-                if (xrt != null) {
-                    double[] pos = xrtransport.getInitialPos();
+                if (xray instanceof CharacteristicXRay) {
+                    XRayTransition xrt =
+                            ((CharacteristicXRay) xray).getTransition();
+                    double[] pos = xray.getPosition();
 
                     HistogramDouble3D emittedDistribution =
                             emittedDistributions.get(xrt);
@@ -70,7 +72,7 @@ public class PhotonEmissionMapListener implements ActionListener {
                         emittedDistributions.put(xrt, emittedDistribution);
                     }
                     emittedDistribution.add(pos[0], pos[1], pos[2],
-                            xrtransport.getIntensity());
+                            xray.getIntensity());
 
                     HistogramDouble3D generatedDistribution =
                             generatedDistributions.get(xrt);
@@ -79,7 +81,7 @@ public class PhotonEmissionMapListener implements ActionListener {
                         generatedDistributions.put(xrt, generatedDistribution);
                     }
                     generatedDistribution.add(pos[0], pos[1], pos[2],
-                            xrtransport.getGenerated());
+                            xray.getGenerated());
                 }
             }
         }

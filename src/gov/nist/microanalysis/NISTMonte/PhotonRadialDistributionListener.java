@@ -3,6 +3,8 @@ package gov.nist.microanalysis.NISTMonte;
 import gov.nist.microanalysis.EPQLibrary.XRayTransition;
 import gov.nist.microanalysis.NISTMonte.Gen3.BaseXRayGeneration3;
 import gov.nist.microanalysis.NISTMonte.Gen3.XRayTransport3;
+import gov.nist.microanalysis.NISTMonte.Gen3.BaseXRayGeneration3.CharacteristicXRay;
+import gov.nist.microanalysis.NISTMonte.Gen3.BaseXRayGeneration3.XRay;
 import gov.nist.microanalysis.Utility.HistogramDouble;
 import gov.nist.microanalysis.Utility.Math2;
 
@@ -80,34 +82,37 @@ public class PhotonRadialDistributionListener implements ActionListener {
         switch (ae.getID()) {
         case BaseXRayGeneration3.XRayGeneration: {
             for (int i = xrayEventListener.getEventCount() - 1; i >= 0; i--) {
-                XRayTransport3.XRayTr xrtransport =
-                        (XRayTransport3.XRayTr) xrayEventListener.getXRay(i);
-                XRayTransition xrt = xrtransport.getTransition();
+                XRay xray = xrayEventListener.getXRay(i);
 
-                if (xrt != null) {
-                    // From
-                    // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
-                    double[] pos = xrtransport.getInitialPos();
-                    double radius =
-                            Math2.magnitude(Math2.cross(normal,
-                                    Math2.minus(center, pos)));
+                if (xray instanceof CharacteristicXRay) {
+                    XRayTransition xrt =
+                            ((CharacteristicXRay) xray).getTransition();
+                    if (xrt != null) {
 
-                    HistogramDouble emittedDistribution =
-                            emittedDistributions.get(xrt);
-                    if (emittedDistribution == null) {
-                        emittedDistribution = emptyDistribution.clone();
-                        emittedDistributions.put(xrt, emittedDistribution);
+                        // From
+                        // http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+                        double[] pos = xray.getGenerationPos();
+                        double radius =
+                                Math2.magnitude(Math2.cross(normal,
+                                        Math2.minus(center, pos)));
+
+                        HistogramDouble emittedDistribution =
+                                emittedDistributions.get(xrt);
+                        if (emittedDistribution == null) {
+                            emittedDistribution = emptyDistribution.clone();
+                            emittedDistributions.put(xrt, emittedDistribution);
+                        }
+                        emittedDistribution.add(radius, xray.getIntensity());
+
+                        HistogramDouble generatedDistribution =
+                                generatedDistributions.get(xrt);
+                        if (generatedDistribution == null) {
+                            generatedDistribution = emptyDistribution.clone();
+                            generatedDistributions.put(xrt,
+                                    generatedDistribution);
+                        }
+                        generatedDistribution.add(radius, xray.getGenerated());
                     }
-                    emittedDistribution.add(radius, xrtransport.getIntensity());
-
-                    HistogramDouble generatedDistribution =
-                            generatedDistributions.get(xrt);
-                    if (generatedDistribution == null) {
-                        generatedDistribution = emptyDistribution.clone();
-                        generatedDistributions.put(xrt, generatedDistribution);
-                    }
-                    generatedDistribution.add(radius,
-                            xrtransport.getGenerated());
                 }
             }
         }

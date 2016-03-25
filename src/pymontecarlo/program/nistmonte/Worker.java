@@ -159,11 +159,13 @@ public class Worker extends AbstractWorker {
         }
 
         FluorescenceXRayGeneration3 characFluoGen = null;
-        if (hasFluo) {
+        if (hasFluo)
             characFluoGen = FluorescenceXRayGeneration3.create(mcss, characGen);
-            characFluoGen
-                    .setIncludeCompton(classFluo == FluorescenceMC.FluorescenceCompton);
-        }
+
+//        ComptonXRayGeneration3 characFluoComptonGen = null;
+//        if (hasFluo && classFluo == FluorescenceMC.FluorescenceCompton)
+//            characFluoComptonGen =
+//                    ComptonXRayGeneration3.create(mcss, characGen);
 
         FluorescenceXRayGeneration3 bremssFluoGen = null;
         if (hasFluo) {

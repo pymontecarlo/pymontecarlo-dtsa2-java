@@ -274,7 +274,7 @@ public class TestCase {
         double[] pos = getDetectorPosition();
         FluorescenceXRayGeneration3 charactGenFluo =
                 FluorescenceXRayGeneration3.create(mcss, charac.getSource());
-        charactGenFluo.setIncludeCompton(true);
+//        charactGenFluo.setIncludeCompton(true);
         return XRayTransport3.create(mcss, pos, charactGenFluo);
     }
 
