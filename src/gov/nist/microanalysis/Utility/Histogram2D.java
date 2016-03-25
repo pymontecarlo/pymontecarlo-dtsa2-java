@@ -225,5 +225,17 @@ public class Histogram2D extends AbstractHistogram2D {
 
         pw.close();
     }
+    
+    public int[][] getCountsArray() {
+        return counts.clone();
+    }
+    
+    public double[] getXArray() {
+        return xBinMins.clone();
+    }
+    
+    public double[] getYArray() {
+        return yBinMins.clone();
+    }
 
 }
