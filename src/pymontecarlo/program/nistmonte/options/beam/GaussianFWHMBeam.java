@@ -20,7 +20,7 @@ public class GaussianFWHMBeam extends PencilBeam implements ElectronGun {
     private double diameter;
 
     /** Conversion to Gaussian (1 sigma) to FWHM. */
-    private static final double GAUSSIAN_TO_FWHM = Math.sqrt(2.0 * Math
+    private static final double GAUSSIAN_TO_FWHM = 2.0 * Math.sqrt(2.0 * Math
             .log(2.0));
 
 
@@ -42,7 +42,7 @@ public class GaussianFWHMBeam extends PencilBeam implements ElectronGun {
     public Electron createElectron() {
         final double[] initialPos = getCenter();
         final double r =
-                random.nextGaussian() * GAUSSIAN_TO_FWHM * diameter / 2.0;
+                random.nextGaussian() * diameter / GAUSSIAN_TO_FWHM;
         final double th = 2.0 * Math.PI * random.nextDouble();
         initialPos[0] += r * Math.cos(th);
         initialPos[1] += r * Math.sin(th);
