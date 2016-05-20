@@ -10,6 +10,7 @@ import org.jdom2.DataConversionException;
 import org.jdom2.Element;
 
 import pymontecarlo.program.nistmonte.options.beam.GaussianFWHMBeam;
+import pymontecarlo.program.nistmonte.options.beam.GaussianFWHMExpTailBeam;
 import pymontecarlo.program.nistmonte.options.beam.PencilBeam;
 
 /**
@@ -148,5 +149,72 @@ public class BeamExtractorFactory {
 
     public static final BeamExtractor GAUSSIAN_FWHM =
             new GaussianFWHMBeamExtractor();
-    
+
+    protected static class GaussianFWHMExpTailBeamExtractor extends
+            GaussianFWHMBeamExtractor implements BeamExtractor {
+
+        @Override
+        public ElectronGun extract(Element beamElement)
+                throws IOException, EPQException {
+            double diameter = extractDiameter(beamElement);
+            double skirtThreshold = extractSkirtThreshold(beamElement);
+            double skirtFactor = extractSkirtFactor(beamElement);
+
+            GaussianFWHMExpTailBeam beam =
+                    new GaussianFWHMExpTailBeam(diameter, skirtThreshold,
+                            skirtFactor);
+
+            beam.setBeamEnergy(ToSI.eV(extractBeamEnergy(beamElement)));
+            beam.setCenter(extractCenter(beamElement));
+            beam.setDirection(extractDirection(beamElement));
+
+            return beam;
+        }
+
+
+
+        /**
+         * Extracts skirt threshold from the XML element.
+         * 
+         * @param beamElement
+         *            XML element
+         * @return skirt threshold
+         */
+        protected double extractSkirtThreshold(Element beamElement)
+                throws IOException {
+            double skirtThreshold;
+            try {
+                skirtThreshold =
+                        beamElement.getAttribute("skirtThreshold")
+                                .getDoubleValue();
+            } catch (DataConversionException e) {
+                throw new IOException(e);
+            }
+            return skirtThreshold;
+        }
+        
+        /**
+         * Extracts skirt threshold from the XML element.
+         * 
+         * @param beamElement
+         *            XML element
+         * @return skirt threshold
+         */
+        protected double extractSkirtFactor(Element beamElement)
+                throws IOException {
+            double skirtFactor;
+            try {
+                skirtFactor =
+                        beamElement.getAttribute("skirtFactor")
+                                .getDoubleValue();
+            } catch (DataConversionException e) {
+                throw new IOException(e);
+            }
+            return skirtFactor;
+        }
+    }
+
+    public static final BeamExtractor GAUSSIAN_FWHM_EXP_TAIL =
+            new GaussianFWHMExpTailBeamExtractor();
+
 }

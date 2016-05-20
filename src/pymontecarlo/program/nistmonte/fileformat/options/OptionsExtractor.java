@@ -35,6 +35,8 @@ public class OptionsExtractor implements Extractor {
         ExtractorManager.register("pencilBeam", BeamExtractorFactory.PENCIL);
         ExtractorManager.register("gaussianBeam",
                 BeamExtractorFactory.GAUSSIAN_FWHM);
+        ExtractorManager.register("gaussianExpTailBeam",
+                BeamExtractorFactory.GAUSSIAN_FWHM_EXP_TAIL);
 
         // Geometry
         ExtractorManager.register("substrate",
